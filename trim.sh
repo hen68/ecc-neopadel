@@ -51,7 +51,7 @@ KEEP_SKILLS=(
   gan-style-harness gateguard git-workflow github-ops hookify-rules
   make-interfaces-feel-better mcp-server-patterns nextjs-turbopack
   parallel-execution-optimizer plan-orchestrate production-audit
-  project-flow-ops prompt-optimizer python-patterns python-testing react-patterns react-performance react-testing
+  project-flow-ops prompt-optimizer react-patterns react-performance react-testing
   redis-patterns regex-vs-llm-structured-text repo-scan research-ops rules-distill santa-method
   search-first security-review security-scan skill-comply skill-scout skill-stocktake
   strategic-compact tdd-workflow terminal-ops verification-loop
@@ -66,7 +66,7 @@ KEEP_SKILLS=(
   design-system accessibility frontend-a11y frontend-design-direction plan-canvas
   motion-foundations motion-patterns motion-ui
   # -- v2 adopted: JS backend & DB --
-  nestjs-patterns prisma-patterns database-migrations vue-patterns react-native-patterns
+  database-migrations vue-patterns react-native-patterns
   # -- v2 adopted: QA / security / research / ops (post-review, note.txt) --
   browser-qa canary-watch codehealth-mcp iterative-retrieval knowledge-ops
   security-bounty-hunter seo workspace-surface-audit
@@ -77,7 +77,7 @@ KEEP_AGENTS=(
   # -- base (v1) --
   architect build-error-resolver code-architect code-explorer code-reviewer code-simplifier comment-analyzer conversation-analyzer
   database-reviewer doc-updater docs-lookup e2e-runner gan-evaluator gan-generator gan-planner harness-optimizer
-  loop-operator performance-optimizer planner pr-test-analyzer python-reviewer react-build-resolver react-reviewer refactor-cleaner
+  loop-operator performance-optimizer planner pr-test-analyzer react-build-resolver react-reviewer refactor-cleaner
   security-reviewer seo-specialist silent-failure-hunter tdd-guide type-design-analyzer typescript-reviewer
   # -- v2 adopted: agent-harness & eval --
   agent-evaluator spec-miner
@@ -90,7 +90,7 @@ KEEP_COMMANDS=(
   gan-design hookify hookify-configure hookify-help hookify-list instinct-export instinct-import
   instinct-status learn learn-eval model-route
   plan plan-prd pr project-init projects
-  promote prp-commit prp-implement prp-plan prp-pr prp-prd prune python-review
+  promote prp-commit prp-implement prp-plan prp-pr prp-prd prune
   react-build react-review react-test resume-session review-pr santa-loop
   save-session sessions setup-pm skill-create skill-health test-coverage
   update-docs
@@ -103,10 +103,9 @@ KEEP_COMMANDS=(
 
 # --- RULES (directories under rules/) -----------------------------------------
 # Stack the team actually touches + your local zh addition. README.md left in place.
-# NOTE: `react` is intentionally NOT here per your list — flag if the React admin
-# panel should get always-on react rules too.
+# No Python anywhere in the monorepo (Babel/JS backend, Mongoose not Postgres/Prisma) — dropped.
 KEEP_RULES=(
-  common typescript react python web react-native swift kotlin zh
+  common typescript react web react-native swift kotlin zh
 )
 
 # ==============================================================================
