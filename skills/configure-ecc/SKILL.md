@@ -286,7 +286,7 @@ Some skills reference others. Verify these dependencies:
 - `python-testing` may reference `python-patterns`
 - `golang-testing` may reference `golang-patterns`
 - `crosspost` references `content-engine` and `x-api`
-- `deep-research` references `exa-search` (complementary MCP tools)
+- `deep-research` references `exa-search` (exa is deep-research's fallback MCP when Perplexity is unavailable)
 - `fal-ai-media` references `videodb` (complementary media skill)
 - `x-api` references `content-engine` and `crosspost`
 - Language-specific rules reference `common/` counterparts

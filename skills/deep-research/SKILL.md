@@ -1,17 +1,19 @@
 ---
 name: deep-research
-description: Multi-source deep research using firecrawl and exa MCPs. Searches the web, synthesizes findings, and delivers cited reports with source attribution. Use when the user wants thorough research on any topic with evidence and citations.
+description: Multi-source deep research, preferring Perplexity with firecrawl/exa as fallback. Searches the web, synthesizes findings, and delivers cited reports with source attribution. Use when the user wants thorough research on any topic with evidence and citations.
 metadata:
   origin: ECC
 ---
 
 # Deep Research
 
-> **Drift-prone skill.** Firecrawl/Exa MCP tool names, quotas, and result
-> shapes change. Verify the configured MCP tools and current API docs before
-> promising coverage or quoting live source counts.
+> **Drift-prone skill.** Perplexity/Firecrawl/Exa MCP tool names, quotas, and
+> result shapes change. Verify the configured MCP tools and current API docs
+> before promising coverage or quoting live source counts.
 
-Produce thorough, cited research reports from multiple web sources using firecrawl and exa MCP tools.
+Produce thorough, cited research reports from multiple web sources. Prefer
+Perplexity's grounded search/research tools; fall back to firecrawl/exa when
+Perplexity is unavailable or out of quota.
 
 ## When to Activate
 
@@ -23,11 +25,15 @@ Produce thorough, cited research reports from multiple web sources using firecra
 
 ## MCP Requirements
 
-At least one of:
+Preferred:
+- **perplexity** — `perplexity_search`, `perplexity_ask`, `perplexity_research`, `perplexity_reason`
+
+Fallback (use if perplexity is unavailable or its quota is exhausted):
 - **firecrawl** — `firecrawl_search`, `firecrawl_scrape`, `firecrawl_crawl`
 - **exa** — `web_search_exa`, `web_search_advanced_exa`, `crawling_exa`
 
-Both together give the best coverage. Configure in `~/.claude.json` or `~/.codex/config.toml`.
+Firecrawl/exa together also give useful supplementary coverage on broad topics even when
+Perplexity is available. Configure in `~/.claude.json` or `~/.codex/config.toml`.
 
 ## Workflow
 
@@ -51,14 +57,20 @@ Break the topic into 3-5 research sub-questions. Example:
 
 ### Step 3: Execute Multi-Source Search
 
-For EACH sub-question, search using available MCP tools:
+For EACH sub-question, search using the preferred tool; fall back only if it's unavailable or over quota:
 
-**With firecrawl:**
+**With perplexity (preferred):**
+```
+perplexity_search(query: "<sub-question keywords>")
+perplexity_research(query: "<sub-question keywords>", reasoning_effort: "medium")
+```
+
+**Fallback — with firecrawl:**
 ```
 firecrawl_search(query: "<sub-question keywords>", limit: 8)
 ```
 
-**With exa:**
+**Fallback — with exa:**
 ```
 web_search_exa(query: "<sub-question keywords>", numResults: 8)
 web_search_advanced_exa(query: "<keywords>", numResults: 5, startPublishedDate: "2025-01-01")
@@ -74,12 +86,17 @@ web_search_advanced_exa(query: "<keywords>", numResults: 5, startPublishedDate: 
 
 For the most promising URLs, fetch full content:
 
-**With firecrawl:**
+**With perplexity (preferred):**
+```
+perplexity_ask(query: "Summarize the key claims and data in <url>")
+```
+
+**Fallback — with firecrawl:**
 ```
 firecrawl_scrape(url: "<url>")
 ```
 
-**With exa:**
+**Fallback — with exa:**
 ```
 crawling_exa(url: "<url>", tokensNum: 5000)
 ```
