@@ -44,12 +44,12 @@ KEEP_SKILLS=(
   # -- base (v1 keep-list) --
   agent-introspection-debugging agentic-engineering ai-regression-testing
   api-design backend-patterns
-  blueprint ck codebase-onboarding coding-standards
+  blueprint ck coding-standards
   continuous-learning-v2 cost-tracking council
   deep-research deployment-patterns dmux-workflows docker-patterns documentation-lookup e2e-testing
   error-handling exa-search
   gateguard git-workflow github-ops
-  make-interfaces-feel-better mcp-server-patterns nextjs-turbopack
+  make-interfaces-feel-better nextjs-turbopack
   production-audit
   prompt-optimizer react-patterns react-performance react-testing
   redis-patterns regex-vs-llm-structured-text repo-scan research-ops rules-distill santa-method
