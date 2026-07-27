@@ -42,11 +42,11 @@ APPLY=0
 #   agent-harness/eval, ECC self-mgmt/orchestration, frontend/design/a11y, JS backend/DB.
 KEEP_SKILLS=(
   # -- base (v1 keep-list) --
-  agent-introspection-debugging agentic-engineering ai-regression-testing
+  agent-introspection-debugging ai-regression-testing
   api-design backend-patterns
   blueprint ck coding-standards
   continuous-learning-v2 cost-tracking council
-  deep-research deployment-patterns dmux-workflows docker-patterns documentation-lookup e2e-testing
+  deep-research deployment-patterns docker-patterns documentation-lookup e2e-testing
   error-handling exa-search
   gateguard git-workflow github-ops
   make-interfaces-feel-better nextjs-turbopack
@@ -61,7 +61,7 @@ KEEP_SKILLS=(
   orch-add-feature orch-build-mvp orch-change-feature orch-fix-defect orch-pipeline orch-refine-code
   # -- v2 adopted: frontend/design & a11y --
   design-system accessibility frontend-a11y frontend-design-direction plan-canvas
-  motion-foundations motion-patterns motion-ui
+  motion-foundations motion-patterns
   # -- v2 adopted: JS backend & DB --
   database-migrations react-native-patterns
   # -- v2 adopted: QA / security / research / ops (post-review, note.txt) --
@@ -72,12 +72,12 @@ KEEP_SKILLS=(
 # --- AGENTS (*.md under agents/) ----------------------------------------------
 KEEP_AGENTS=(
   # -- base (v1) --
-  architect build-error-resolver code-explorer code-reviewer code-simplifier comment-analyzer conversation-analyzer
-  doc-updater docs-lookup e2e-runner harness-optimizer
+  architect build-error-resolver code-explorer code-reviewer code-simplifier comment-analyzer
+  docs-lookup e2e-runner
   loop-operator performance-optimizer planner pr-test-analyzer react-build-resolver react-reviewer refactor-cleaner
   security-reviewer seo-specialist silent-failure-hunter tdd-guide type-design-analyzer typescript-reviewer
   # -- v2 adopted: agent-harness & eval --
-  agent-evaluator spec-miner gan-evaluator gan-generator gan-planner
+  gan-evaluator gan-generator gan-planner
 )
 
 # --- COMMANDS (*.md under commands/) ------------------------------------------
@@ -101,7 +101,7 @@ KEEP_COMMANDS=(
 # Stack the team actually touches + your local zh addition. README.md left in place.
 # No Python anywhere in the monorepo (Babel/JS backend, Mongoose not Postgres/Prisma) — dropped.
 KEEP_RULES=(
-  common typescript react web react-native swift kotlin zh
+  common typescript react web react-native swift kotlin
 )
 
 # ==============================================================================
