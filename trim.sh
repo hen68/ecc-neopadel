@@ -46,7 +46,7 @@ KEEP_SKILLS=(
   api-design backend-patterns
   blueprint ck coding-standards
   continuous-learning-v2 cost-tracking council
-  deep-research deployment-patterns docker-patterns documentation-lookup e2e-testing
+  deep-research deployment-patterns docker-patterns e2e-testing
   error-handling exa-search
   gateguard git-workflow github-ops
   make-interfaces-feel-better nextjs-turbopack
@@ -73,7 +73,7 @@ KEEP_SKILLS=(
 KEEP_AGENTS=(
   # -- base (v1) --
   architect build-error-resolver code-explorer code-reviewer code-simplifier comment-analyzer
-  docs-lookup e2e-runner
+  e2e-runner
   loop-operator performance-optimizer planner pr-test-analyzer react-build-resolver react-reviewer refactor-cleaner
   security-reviewer seo-specialist silent-failure-hunter tdd-guide type-design-analyzer typescript-reviewer
   # -- v2 adopted: agent-harness & eval --
