@@ -1,10 +1,5 @@
 ---
-paths:
-  - "**/*.tsx"
-  - "**/*.jsx"
-  - "**/components/**/*.ts"
-  - "**/app/**/*.ts"
-  - "**/pages/**/*.ts"
+globs: "admin/**/*.tsx,admin/**/*.jsx,admin/**/components/**/*.ts,admin/**/app/**/*.ts,admin/**/pages/**/*.ts,store-app/**/*.tsx,store-app/**/*.jsx,store-app/**/components/**/*.ts,store-app/**/app/**/*.ts,store-app/**/pages/**/*.ts,store-kiosk/**/*.tsx,store-kiosk/**/*.jsx,store-kiosk/**/components/**/*.ts,store-kiosk/**/app/**/*.ts,store-kiosk/**/pages/**/*.ts,web-app/**/*.tsx,web-app/**/*.jsx,web-app/**/components/**/*.ts,web-app/**/app/**/*.ts,web-app/**/pages/**/*.ts,health-dashboard/**/*.tsx,health-dashboard/**/*.jsx,health-dashboard/**/components/**/*.ts,health-dashboard/**/app/**/*.ts,health-dashboard/**/pages/**/*.ts"
 ---
 # React Security
 

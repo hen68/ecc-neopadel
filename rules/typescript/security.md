@@ -1,9 +1,5 @@
 ---
-paths:
-  - "**/*.ts"
-  - "**/*.tsx"
-  - "**/*.js"
-  - "**/*.jsx"
+globs: "**/*.ts,**/*.tsx,**/*.js,**/*.jsx"
 ---
 # TypeScript/JavaScript Security
 

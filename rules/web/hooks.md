@@ -1,14 +1,5 @@
 ---
-paths:
-  - "**/*.css"
-  - "**/*.scss"
-  - "**/*.sass"
-  - "**/*.less"
-  - "**/*.html"
-  - "**/*.tsx"
-  - "**/*.jsx"
-  - "**/*.vue"
-  - "**/*.svelte"
+globs: "admin/**/*.css,admin/**/*.scss,admin/**/*.sass,admin/**/*.less,admin/**/*.html,admin/**/*.tsx,admin/**/*.jsx,admin/**/*.vue,admin/**/*.svelte,store-app/**/*.css,store-app/**/*.scss,store-app/**/*.sass,store-app/**/*.less,store-app/**/*.html,store-app/**/*.tsx,store-app/**/*.jsx,store-app/**/*.vue,store-app/**/*.svelte,store-kiosk/**/*.css,store-kiosk/**/*.scss,store-kiosk/**/*.sass,store-kiosk/**/*.less,store-kiosk/**/*.html,store-kiosk/**/*.tsx,store-kiosk/**/*.jsx,store-kiosk/**/*.vue,store-kiosk/**/*.svelte,web-app/**/*.css,web-app/**/*.scss,web-app/**/*.sass,web-app/**/*.less,web-app/**/*.html,web-app/**/*.tsx,web-app/**/*.jsx,web-app/**/*.vue,web-app/**/*.svelte,health-dashboard/**/*.css,health-dashboard/**/*.scss,health-dashboard/**/*.sass,health-dashboard/**/*.less,health-dashboard/**/*.html,health-dashboard/**/*.tsx,health-dashboard/**/*.jsx,health-dashboard/**/*.vue,health-dashboard/**/*.svelte"
 ---
 > This file extends [common/hooks.md](../common/hooks.md) with web-specific hook recommendations.
 

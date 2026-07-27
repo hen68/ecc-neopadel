@@ -1,11 +1,5 @@
 ---
-paths:
-  - "**/*.test.tsx"
-  - "**/*.test.jsx"
-  - "**/*.spec.tsx"
-  - "**/*.spec.jsx"
-  - "**/__tests__/**/*.ts"
-  - "**/__tests__/**/*.tsx"
+globs: "admin/**/*.test.tsx,admin/**/*.test.jsx,admin/**/*.spec.tsx,admin/**/*.spec.jsx,admin/**/__tests__/**/*.ts,admin/**/__tests__/**/*.tsx,store-app/**/*.test.tsx,store-app/**/*.test.jsx,store-app/**/*.spec.tsx,store-app/**/*.spec.jsx,store-app/**/__tests__/**/*.ts,store-app/**/__tests__/**/*.tsx,store-kiosk/**/*.test.tsx,store-kiosk/**/*.test.jsx,store-kiosk/**/*.spec.tsx,store-kiosk/**/*.spec.jsx,store-kiosk/**/__tests__/**/*.ts,store-kiosk/**/__tests__/**/*.tsx,web-app/**/*.test.tsx,web-app/**/*.test.jsx,web-app/**/*.spec.tsx,web-app/**/*.spec.jsx,web-app/**/__tests__/**/*.ts,web-app/**/__tests__/**/*.tsx,health-dashboard/**/*.test.tsx,health-dashboard/**/*.test.jsx,health-dashboard/**/*.spec.tsx,health-dashboard/**/*.spec.jsx,health-dashboard/**/__tests__/**/*.ts,health-dashboard/**/__tests__/**/*.tsx"
 ---
 # React Testing
 

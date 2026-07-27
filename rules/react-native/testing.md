@@ -1,7 +1,5 @@
 ---
-paths:
-  - "**/*.ts"
-  - "**/*.tsx"
+globs: "mobile-app/**/*.ts,mobile-app/**/*.tsx"
 ---
 # React Native / Expo Testing
 
