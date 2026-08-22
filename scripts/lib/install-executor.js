@@ -80,7 +80,8 @@ function validateLegacyTarget(target) {
   throw new Error(`Unknown install target: ${target}. Expected one of ${SUPPORTED_INSTALL_TARGETS.join(', ')}`);
 }
 
-const IGNORED_DIRECTORY_NAMES = new Set(['node_modules', '.git']);
+const IGNORED_DIRECTORY_NAMES = new Set(['node_modules', '.git', '__pycache__']);
+const IGNORED_FILE_EXTENSIONS = new Set(['.pyc', '.pyo', '.pyd']);
 
 function listFilesRecursive(dirPath) {
   if (!fs.existsSync(dirPath)) {
@@ -101,6 +102,9 @@ function listFilesRecursive(dirPath) {
         files.push(path.join(entry.name, childFile));
       }
     } else if (entry.isFile()) {
+      if (IGNORED_FILE_EXTENSIONS.has(path.extname(entry.name).toLowerCase())) {
+        continue;
+      }
       files.push(entry.name);
     }
   }
@@ -118,12 +122,24 @@ function createStatePreview(options) {
   return createInstallState(options);
 }
 
-function applyInstallPlan(plan) {
+function applyInstallPlan(plan, dependencies = {}) {
   const { applyInstallPlan: applyPlan } = require('./install/apply');
-  return applyPlan(plan);
+  return applyPlan(plan, dependencies);
 }
 
-function buildCopyFileOperation({ moduleId, sourcePath, sourceRelativePath, destinationPath, strategy }) {
+function previewInstallPlan(plan) {
+  const { previewInstallPlan: previewPlan } = require('./install/apply');
+  return previewPlan(plan);
+}
+
+function buildCopyFileOperation({
+  moduleId,
+  sourcePath,
+  sourceRelativePath,
+  destinationPath,
+  strategy,
+  contentTransform,
+}) {
   return {
     kind: 'copy-file',
     moduleId,
@@ -132,7 +148,8 @@ function buildCopyFileOperation({ moduleId, sourcePath, sourceRelativePath, dest
     destinationPath,
     strategy,
     ownership: 'managed',
-    scaffoldOnly: false
+    scaffoldOnly: false,
+    ...(contentTransform ? { contentTransform } : {}),
   };
 }
 
@@ -158,7 +175,8 @@ function addRecursiveCopyOperations(operations, options) {
         sourcePath,
         sourceRelativePath,
         destinationPath,
-        strategy: options.strategy || 'preserve-relative-path'
+        strategy: options.strategy || 'preserve-relative-path',
+        contentTransform: options.contentTransform,
       })
     );
   }
@@ -338,6 +356,7 @@ function planClaudeStyleLegacyInstall(context, { adapterId, adapterRootInput, ru
 
   return {
     mode: 'legacy',
+    sourceRoot: context.sourceRoot,
     adapter,
     target: adapterId,
     targetRoot,
@@ -509,7 +528,8 @@ function planAntigravityLegacyInstall(context) {
     moduleId: 'legacy-antigravity-install',
     sourceRoot: context.sourceRoot,
     sourceRelativeDir: 'agents',
-    destinationDir: path.join(targetRoot, 'skills')
+    destinationDir: path.join(targetRoot, 'agents'),
+    contentTransform: 'antigravity-agent-frontmatter'
   });
   addRecursiveCopyOperations(operations, {
     moduleId: 'legacy-antigravity-install',
@@ -584,6 +604,7 @@ function createLegacyInstallPlan(options = {}) {
 
   return {
     mode: 'legacy',
+    sourceRoot,
     target: plan.target,
     adapter: {
       id: plan.adapter.id,
@@ -625,6 +646,7 @@ function createLegacyCompatInstallPlan(options = {}) {
     includeComponentIds,
     excludeComponentIds,
     legacyLanguages: selection.legacyLanguages,
+    ruleLanguages: selection.ruleLanguages,
     legacyMode: true,
     requestProfileId: null,
     requestModuleIds: [],
@@ -667,7 +689,8 @@ function materializeScaffoldOperation(sourceRoot, operation) {
         sourcePath,
         sourceRelativePath: operation.sourceRelativePath,
         destinationPath: operation.destinationPath,
-        strategy: operation.strategy
+        strategy: operation.strategy,
+        contentTransform: operation.contentTransform,
       })
     ];
   }
@@ -683,9 +706,20 @@ function materializeScaffoldOperation(sourceRoot, operation) {
       sourcePath: path.join(sourcePath, relativeFile),
       sourceRelativePath,
       destinationPath: path.join(operation.destinationPath, relativeFile),
-      strategy: operation.strategy
+      strategy: operation.strategy,
+      contentTransform: operation.contentTransform,
     });
   });
+}
+
+function isSelectedAntigravityLegacyRule(operation, ruleLanguages) {
+  const normalizedSourcePath = String(operation.sourceRelativePath || '').replace(/\\/g, '/');
+  if (!normalizedSourcePath.startsWith('rules/')) {
+    return true;
+  }
+
+  const namespace = normalizedSourcePath.split('/')[1];
+  return namespace === 'common' || ruleLanguages.includes(namespace);
 }
 
 function dedupeCopyFileOperations(operations) {
@@ -695,8 +729,8 @@ function dedupeCopyFileOperations(operations) {
   // actually determines the installed content. Recording the shadowed earlier
   // writes in install-state makes `doctor` report perpetual drift and drives
   // `repair` to clobber the override with the generic source (issue #2414).
-  // Keep only the last `copy-file` per destination — matching the sequential
-  // apply order in applyInstallPlan — and leave every other operation kind
+  // Keep only the last `copy-file` per destination - matching the sequential
+  // apply order in applyInstallPlan - and leave every other operation kind
   // (e.g. accumulating `merge-json` writes into a shared config) untouched and
   // in order.
   const lastCopyIndexByDestination = new Map();
@@ -743,8 +777,16 @@ function createManifestInstallPlan(options = {}) {
     exemptValidationCodes: options.exemptValidationCodes || [],
   });
   const adapter = getInstallTargetAdapter(target);
+  const materializedOperations = plan.operations.flatMap(operation => (
+    materializeScaffoldOperation(sourceRoot, operation)
+  ));
+  const ruleLanguages = Array.isArray(options.ruleLanguages) ? [...options.ruleLanguages] : [];
   const operations = dedupeCopyFileOperations(
-    plan.operations.flatMap(operation => materializeScaffoldOperation(sourceRoot, operation))
+    options.legacyMode && target === 'antigravity'
+      ? materializedOperations.filter(operation => (
+        isSelectedAntigravityLegacyRule(operation, ruleLanguages)
+      ))
+      : materializedOperations
   );
   const source = {
     repoVersion: getPackageVersion(sourceRoot),
@@ -773,6 +815,7 @@ function createManifestInstallPlan(options = {}) {
 
   return {
     mode: options.mode || 'manifest',
+    sourceRoot,
     target,
     adapter: {
       id: adapter.id,
@@ -802,6 +845,7 @@ module.exports = {
   SUPPORTED_INSTALL_TARGETS,
   LEGACY_INSTALL_TARGETS,
   applyInstallPlan,
+  previewInstallPlan,
   createLegacyCompatInstallPlan,
   createManifestInstallPlan,
   createLegacyInstallPlan,
