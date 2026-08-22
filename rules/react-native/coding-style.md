@@ -1,5 +1,7 @@
 ---
-globs: "mobile-app/**/*.ts,mobile-app/**/*.tsx"
+paths:
+  - "mobile-app/**/*.ts"
+  - "mobile-app/**/*.tsx"
 ---
 # React Native / Expo Coding Style
 
