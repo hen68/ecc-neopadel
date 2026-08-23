@@ -67,6 +67,8 @@ KEEP_SKILLS=(
   # -- v2 adopted: QA / security / research / ops (post-review, note.txt) --
   browser-qa canary-watch codehealth-mcp iterative-retrieval knowledge-ops
   security-bounty-hunter seo
+  # -- restored: confirmed real historical usage, wrongly cut as "dead code" --
+  agent-self-evaluation
 )
 
 # --- AGENTS (*.md under agents/) ----------------------------------------------
@@ -78,6 +80,8 @@ KEEP_AGENTS=(
   security-reviewer seo-specialist silent-failure-hunter tdd-guide type-design-analyzer typescript-reviewer
   # -- v2 adopted: agent-harness & eval --
   gan-evaluator gan-generator gan-planner
+  # -- restored: confirmed real historical usage, wrongly cut as "dead code" --
+  database-reviewer
 )
 
 # --- COMMANDS (*.md under commands/) ------------------------------------------
@@ -95,6 +99,8 @@ KEEP_COMMANDS=(
   gan-build gan-design
   # -- v2 adopted: frontend/design --
   plan-canvas
+  # -- restored: confirmed real historical usage, wrongly cut as orphaned PRP family --
+  prp-plan prp-pr
 )
 
 # --- RULES (directories under rules/) -----------------------------------------
