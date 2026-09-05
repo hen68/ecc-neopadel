@@ -20,7 +20,7 @@ grep '"dev":' package.json       # is --turbopack already opted in?
 |---|---|
 | Turbopack is the **dev default** | Stable but **opt-in**: `next dev --turbopack` |
 | Filesystem caching | Not available |
-| Bundle Analyzer (16.1) | Not available |
+| Turbopack Bundle Analyzer (experimental, 16.1) | `@next/bundle-analyzer` (webpack), `ANALYZE=true next build` |
 | `proxy.ts` middleware filename | `middleware.ts` is the only convention |
 
 Everything else — Turbopack vs webpack tradeoffs, HMR and dev-speed guidance, debugging slow startup — **applies on 15.x too** once `--turbopack` is on. Do not dismiss the skill because the app is 15.x.
@@ -41,9 +41,9 @@ Use when: developing or debugging Next.js 15.0+ apps, diagnosing slow dev startu
 
 ## How It Works
 
-- **Turbopack**: Incremental bundler for Next.js dev. Uses file-system caching so restarts are much faster (e.g. 5–14x on large projects).
+- **Turbopack**: Incremental bundler for Next.js dev. With filesystem caching (16.1+) restarts reuse prior work and are much faster (e.g. 5–14x on large projects); on 15.x there is no disk cache, so the win is cold start and HMR only.
 - **Default in dev**: From Next.js 16, `next dev` runs with Turbopack unless disabled.
-- **File-system caching**: Restarts reuse previous work; cache is typically under `.next`; no extra config needed for basic use.
+- **File-system caching**: Restarts reuse previous work; cache is typically under `.next`. **Not on 15.x at all**; beta and flag-gated on 16.0 (`experimental.turbopackFileSystemCacheForDev: true`); stable and on by default from 16.1.
 - **Bundle Analyzer (Next.js 16.1+)**: Experimental Bundle Analyzer to inspect output and find heavy dependencies; enable via config or experimental flag (see Next.js docs for your version).
 
 ## Examples
@@ -71,13 +71,20 @@ The filename change is tied to the **Next.js version**, not to which bundler (Tu
 
 The rule cuts **both** ways — check the version before flagging either filename:
 
-- **Do not flag `proxy.ts`** as a misnamed or missing middleware file in Next.js 16+ projects. The file is correct and intentional; suggesting a rename to `middleware.ts` will break middleware execution.
-- **Do not flag `middleware.ts`** in Next.js 15.x or earlier projects. It is correct there, `proxy.ts` is not available, and renaming it will break middleware execution.
+- **Do not flag `proxy.ts`** in Next.js 16+ projects. It is correct and intentional.
+- **Do not flag `middleware.ts`** in Next.js 15.x or earlier. It is correct there, and `proxy.ts` is not a convention before 16 — that file is silently ignored, so renaming forward **does** break middleware.
+- On 16+, `middleware.ts` is **deprecated but still runs** (Edge-runtime use cases), slated for removal in a future major. So flag it as deprecated if you like; do not claim it is broken.
 
-Reference: [Next.js proxy docs](https://nextjs.org/docs/app/getting-started/proxy)
+**The rename is not just the filename.** `proxy.ts` must export a function named `proxy` (or a default export); `middleware.ts` must export `middleware`. Renaming only the file leaves a dead handler either way. The codemod does both:
+
+```bash
+npx @next/codemod@canary middleware-to-proxy .
+```
+
+Reference: [Proxy docs](https://nextjs.org/docs/app/getting-started/proxy), [Renaming Middleware to Proxy](https://nextjs.org/docs/messages/middleware-to-proxy)
 
 ## Best Practices
 
-- Stay on a recent Next.js 16.x for stable Turbopack and caching behavior.
+- Turbopack dev is stable from 15.0; filesystem caching needs 16.1+. Do not recommend a major upgrade solely for Turbopack.
 - If dev is slow, ensure you're on Turbopack (default) and that the cache isn't being cleared unnecessarily.
 - For production bundle size issues, use the official Next.js bundle analysis tooling for your version.
