@@ -12,7 +12,7 @@ The gated outer loop (Gate 1 after Plan, Gate 2 before Commit) **stays in the ma
 
 1. **Review** — one reviewer agent per dimension, in parallel:
    - `ecc:code-reviewer` (correctness & quality) — always
-   - one `ecc:<language>-reviewer` per entry in `args.languages` that maps to a backed agent (`typescript`, `react`, `database`); names resolving to the same reviewer are deduped
+   - one `ecc:<language>-reviewer` per entry in `args.languages` that resolves in the reviewer map — `typescript`/`javascript`, `react`, `database`/`sql`, every one backed by an agent in `agents/`; a name not in the map is skipped, and names resolving to the same reviewer are deduped
    - `ecc:security-reviewer` — only when the orch-pipeline security trigger matches the diff/paths
 2. **Dedup** — independent reviewers routinely flag the same line, so findings are merged across dimensions keyed on the normalized `evidence` snippet (titles and line numbers drift per reviewer; the offending code does not). Each surviving finding records which `dimensions` reported it and keeps the strictest severity.
 3. **Verify** — every *unique* `CRITICAL`/`HIGH` finding is handed to an independent adversarial verifier that defaults to *refuted* on uncertainty. `MEDIUM`/`LOW` pass through as advisory.
@@ -35,7 +35,7 @@ Workflow({
 })
 ```
 
-Invalid input throws (the gate **fails closed**): a missing/empty `diff`, malformed JSON, a non-array `changedFiles` or `languages`, or a non-string entry in either is rejected with a clear error rather than silently approving an unreviewed payload.
+Invalid input throws (the gate **fails closed**): a missing/empty `diff`, malformed JSON, a non-array `changedFiles` or `languages`, a non-string entry in either, or a non-string `language` is rejected with a clear error rather than silently approving an unreviewed payload.
 
 ### Returns
 

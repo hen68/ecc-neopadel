@@ -22,9 +22,10 @@ export const meta = {
 //     language?:    string,    // back-compat alias for a single-entry `languages`
 //     changedFiles?: string[], // paths touched, used for the security trigger
 //   }
-// Invalid input (missing/empty diff, bad JSON, non-array changedFiles/languages)
-// throws — the gate fails closed rather than silently approving an unreviewed
-// payload.
+// Invalid input throws — the gate fails closed rather than silently approving
+// an unreviewed payload: missing/empty diff, bad JSON, non-array
+// changedFiles/languages, a non-string entry in either, or a non-string
+// `language`.
 //
 // Returns:
 //   { verdict: 'APPROVE' | 'CHANGES_REQUESTED',  // CHANGES_REQUESTED if any blocker OR a dimension failed
@@ -39,27 +40,21 @@ export const meta = {
 // cross-app PR touching .ts, .tsx and a migration selects the typescript, react
 // and database reviewers), so callers pass a list and each match becomes its own
 // review dimension.
+//
+// Every entry MUST have a backing file in agents/. A name mapped to a
+// non-existent agent is worse than an absent name: it becomes a real dimension
+// that fails to run, which sets `incomplete` and forces CHANGES_REQUESTED on an
+// otherwise clean diff. This map previously listed 15 such names (python, go,
+// rust, java, kotlin, swift, php, csharp, fsharp, vue, flutter, dart, django,
+// fastapi, cpp); they were removed, not because those languages don't matter,
+// but because ECC ships no reviewer for them. Add the agent first, then the
+// entry. Diffs in unmapped languages are still covered by the quality pass.
 const LANGUAGE_REVIEWER = {
   typescript: 'ecc:typescript-reviewer',
-  database: 'ecc:database-reviewer',
-  sql: 'ecc:database-reviewer',
   javascript: 'ecc:typescript-reviewer',
-  python: 'ecc:python-reviewer',
-  go: 'ecc:go-reviewer',
-  rust: 'ecc:rust-reviewer',
-  java: 'ecc:java-reviewer',
-  kotlin: 'ecc:kotlin-reviewer',
-  swift: 'ecc:swift-reviewer',
-  php: 'ecc:php-reviewer',
-  csharp: 'ecc:csharp-reviewer',
-  fsharp: 'ecc:fsharp-reviewer',
   react: 'ecc:react-reviewer',
-  vue: 'ecc:vue-reviewer',
-  flutter: 'ecc:flutter-reviewer',
-  dart: 'ecc:flutter-reviewer',
-  django: 'ecc:django-reviewer',
-  fastapi: 'ecc:fastapi-reviewer',
-  cpp: 'ecc:cpp-reviewer'
+  database: 'ecc:database-reviewer',
+  sql: 'ecc:database-reviewer'
 };
 
 // orch-pipeline security trigger: auth/authz, user input, db queries, fs paths,
@@ -193,8 +188,10 @@ const diff = input.diff;
 const haystack = `${diff}\n${(input.changedFiles || []).join('\n')}`;
 
 // Resolve every requested language/domain to a reviewer agent. `languages` is
-// the list form; `language` is the legacy single-value alias. Unknown names are
-// dropped (the dimension is simply skipped, as before). Two names can share one
+// the list form; `language` is the legacy single-value alias. A name not in the
+// map is dropped (the dimension is simply skipped, as before) — and since every
+// mapped name has a backing agent, dropping is now the only outcome for a name
+// ECC cannot review. Two names can share one
 // agent (typescript/javascript, database/sql) — dedup on the agent so the same
 // reviewer never runs twice over one diff.
 const requestedLanguages = [
