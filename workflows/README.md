@@ -12,7 +12,7 @@ The gated outer loop (Gate 1 after Plan, Gate 2 before Commit) **stays in the ma
 
 1. **Review** — one reviewer agent per dimension, in parallel:
    - `ecc:code-reviewer` (correctness & quality) — always
-   - the matching `ecc:<language>-reviewer` — when `args.language` maps to one
+   - one `ecc:<language>-reviewer` per entry in `args.languages` that maps to a backed agent (`typescript`, `react`, `database`); names resolving to the same reviewer are deduped
    - `ecc:security-reviewer` — only when the orch-pipeline security trigger matches the diff/paths
 2. **Dedup** — independent reviewers routinely flag the same line, so findings are merged across dimensions keyed on the normalized `evidence` snippet (titles and line numbers drift per reviewer; the offending code does not). Each surviving finding records which `dimensions` reported it and keeps the strictest severity.
 3. **Verify** — every *unique* `CRITICAL`/`HIGH` finding is handed to an independent adversarial verifier that defaults to *refuted* on uncertainty. `MEDIUM`/`LOW` pass through as advisory.
@@ -28,13 +28,14 @@ Workflow({
   scriptPath: "workflows/orch-review.workflow.js",
   args: {
     diff: "<unified git diff text>",   // required
-    language: "typescript",            // optional — selects a language reviewer
+    languages: ["typescript", "react"], // optional — one reviewer per entry
+    language: "typescript",            // optional — back-compat alias for a single entry
     changedFiles: ["src/auth.ts"]      // optional — feeds the security trigger
   }
 })
 ```
 
-Invalid input throws (the gate **fails closed**): a missing/empty `diff`, malformed JSON, or a non-array `changedFiles` is rejected with a clear error rather than silently approving an unreviewed payload.
+Invalid input throws (the gate **fails closed**): a missing/empty `diff`, malformed JSON, a non-array `changedFiles` or `languages`, or a non-string entry in either is rejected with a clear error rather than silently approving an unreviewed payload.
 
 ### Returns
 
