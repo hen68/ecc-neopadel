@@ -13,14 +13,19 @@ export const meta = {
 // the main conversation; this script owns only the autonomous, fan-out-heavy
 // review+verify segment between the two human gates.
 //
-// Caller contract — pass `args` (the main loop computes the diff and language):
+// Caller contract — pass `args` (the main loop computes the diff and languages):
 //   {
 //     diff:         string,    // unified `git diff` text to review (required)
-//     language?:    string,    // e.g. "typescript" — selects a language reviewer
+//     languages?:   string[],  // e.g. ["typescript","react","database"] — one
+//                              // reviewer dimension per entry; a cross-app diff
+//                              // should pass every domain that applies
+//     language?:    string,    // back-compat alias for a single-entry `languages`
 //     changedFiles?: string[], // paths touched, used for the security trigger
 //   }
-// Invalid input (missing/empty diff, bad JSON, non-array changedFiles) throws —
-// the gate fails closed rather than silently approving an unreviewed payload.
+// Invalid input throws — the gate fails closed rather than silently approving
+// an unreviewed payload: missing/empty diff, bad JSON, non-array
+// changedFiles/languages, a non-string entry in either, or a non-string
+// `language`.
 //
 // Returns:
 //   { verdict: 'APPROVE' | 'CHANGES_REQUESTED',  // CHANGES_REQUESTED if any blocker OR a dimension failed
@@ -31,26 +36,25 @@ export const meta = {
 //     stats: { dimensions, failed, raw, unique, confirmed, unverified, uncertain, refuted } }
 // ---------------------------------------------------------------------------
 
-// Language → ECC reviewer agent. Mirrors the agents present in agents/.
+// Language/domain → ECC reviewer agent. A diff may match several at once (a
+// cross-app PR touching .ts, .tsx and a migration selects the typescript, react
+// and database reviewers), so callers pass a list and each match becomes its own
+// review dimension.
+//
+// Every entry MUST have a backing file in agents/. A name mapped to a
+// non-existent agent is worse than an absent name: it becomes a real dimension
+// that fails to run, which sets `incomplete` and forces CHANGES_REQUESTED on an
+// otherwise clean diff. This map previously listed 15 such names (python, go,
+// rust, java, kotlin, swift, php, csharp, fsharp, vue, flutter, dart, django,
+// fastapi, cpp); they were removed, not because those languages don't matter,
+// but because ECC ships no reviewer for them. Add the agent first, then the
+// entry. Diffs in unmapped languages are still covered by the quality pass.
 const LANGUAGE_REVIEWER = {
   typescript: 'ecc:typescript-reviewer',
   javascript: 'ecc:typescript-reviewer',
-  python: 'ecc:python-reviewer',
-  go: 'ecc:go-reviewer',
-  rust: 'ecc:rust-reviewer',
-  java: 'ecc:java-reviewer',
-  kotlin: 'ecc:kotlin-reviewer',
-  swift: 'ecc:swift-reviewer',
-  php: 'ecc:php-reviewer',
-  csharp: 'ecc:csharp-reviewer',
-  fsharp: 'ecc:fsharp-reviewer',
   react: 'ecc:react-reviewer',
-  vue: 'ecc:vue-reviewer',
-  flutter: 'ecc:flutter-reviewer',
-  dart: 'ecc:flutter-reviewer',
-  django: 'ecc:django-reviewer',
-  fastapi: 'ecc:fastapi-reviewer',
-  cpp: 'ecc:cpp-reviewer'
+  database: 'ecc:database-reviewer',
+  sql: 'ecc:database-reviewer'
 };
 
 // orch-pipeline security trigger: auth/authz, user input, db queries, fs paths,
@@ -170,17 +174,46 @@ if (input.changedFiles != null && !Array.isArray(input.changedFiles)) {
 if (Array.isArray(input.changedFiles) && !input.changedFiles.every(f => typeof f === 'string')) {
   throw new Error('orch-review: args.changedFiles must contain only string paths');
 }
+if (input.languages != null && !Array.isArray(input.languages)) {
+  throw new Error('orch-review: args.languages must be an array of language/domain names');
+}
+if (Array.isArray(input.languages) && !input.languages.every(l => typeof l === 'string')) {
+  throw new Error('orch-review: args.languages must contain only strings');
+}
+if (input.language != null && typeof input.language !== 'string') {
+  throw new Error('orch-review: args.language must be a string');
+}
 
 const diff = input.diff;
 const haystack = `${diff}\n${(input.changedFiles || []).join('\n')}`;
 
-// Build the review dimensions immutably. Quality always runs; language +
+// Resolve every requested language/domain to a reviewer agent. `languages` is
+// the list form; `language` is the legacy single-value alias. A name not in the
+// map is dropped (the dimension is simply skipped, as before) — and since every
+// mapped name has a backing agent, dropping is now the only outcome for a name
+// ECC cannot review. Two names can share one
+// agent (typescript/javascript, database/sql) — dedup on the agent so the same
+// reviewer never runs twice over one diff.
+const requestedLanguages = [
+  ...(Array.isArray(input.languages) ? input.languages : []),
+  ...(typeof input.language === 'string' ? [input.language] : [])
+];
+const langDimensions = requestedLanguages
+  .map(name => String(name).trim().toLowerCase())
+  // hasOwn, not a bare lookup: `constructor`/`__proto__` would otherwise resolve
+  // to prototype members and survive the truthiness filter below.
+  .map(name => ({ name, agentType: Object.hasOwn(LANGUAGE_REVIEWER, name) ? LANGUAGE_REVIEWER[name] : undefined }))
+  // Drop unknown names, then keep only the first name that resolves to a given
+  // reviewer so one agent never reviews the same diff twice.
+  .filter((d, i, all) => d.agentType && all.findIndex(o => o.agentType === d.agentType) === i)
+  .map(d => ({ key: `lang:${d.name}`, label: `${d.name} idioms & pitfalls`, agentType: d.agentType }));
+
+// Build the review dimensions immutably. Quality always runs; language/domain +
 // security are conditional, spread in rather than pushed onto a shared array.
-const langReviewer = input.language && LANGUAGE_REVIEWER[String(input.language).toLowerCase()];
 const securityNeeded = SECURITY_TRIGGER.test(haystack);
 const dimensions = [
   { key: 'quality', label: 'correctness & quality', agentType: 'ecc:code-reviewer' },
-  ...(langReviewer ? [{ key: `lang:${input.language}`, label: `${input.language} idioms & pitfalls`, agentType: langReviewer }] : []),
+  ...langDimensions,
   ...(securityNeeded ? [{ key: 'security', label: 'security (OWASP, secrets, injection)', agentType: 'ecc:security-reviewer' }] : [])
 ];
 if (securityNeeded) {

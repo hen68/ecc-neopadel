@@ -52,10 +52,32 @@ gh pr view <NUMBER> --json files \
 
 If the PR is not found, stop with an error.
 
-Then derive `language` from the dominant changed-file extension (for example
-`.ts`/`.tsx` to `typescript`, `.py` to `python`, `.go` to `go`). Leave it unset
-when the change is mixed or non-code — the workflow simply skips the
-language-specific reviewer.
+Then derive `languages` — **all** language/domain reviewers that apply to the
+changed files, not just the dominant one. A cross-app PR routinely needs several:
+
+| Changed files | Add |
+|---|---|
+| `.ts`, `.js`, `.mts`, `.cts` | `typescript` |
+| `.tsx`, `.jsx` | `typescript` **and** `react` |
+| `.sql`, migrations, schema or model files | `database` |
+
+**These three are the only backed reviewers.** `agents/` ships exactly
+`typescript-reviewer`, `react-reviewer`, `database-reviewer` (plus the
+unconditional `code-reviewer` and `security-reviewer`). Do **not** pass a
+language with no agent behind it — it becomes a real dimension that then fails
+to run, and a failed dimension forces `CHANGES_REQUESTED` on an otherwise clean
+diff. Files in other languages are still covered by the always-on quality pass.
+
+Union the matches across the whole changed-file list and pass them as an array,
+e.g. a PR touching `api/src/models/user.ts`, `admin/src/App.tsx` and a migration
+gives `["typescript", "react", "database"]`. Order does not matter; the workflow
+dedups names that resolve to the same reviewer (`typescript`/`javascript`,
+`database`/`sql`) so a reviewer never runs twice.
+
+Leave `languages` unset or empty when the change is non-code — the workflow
+simply runs without any language dimension. A name absent from the reviewer map
+is skipped silently; a name that resolves to a **missing agent** is not, which is
+why the table above lists only the three backed reviewers.
 
 ## Phase 2 — INVOKE
 
@@ -66,9 +88,9 @@ a missing or empty diff, so always pass a non-empty `diff`.
 Workflow({
   scriptPath: "workflows/orch-review.workflow.js",
   args: {
-    diff: "<unified diff text from Phase 1>",   // required
-    language: "typescript",                      // optional
-    changedFiles: ["src/auth.ts"]                // optional — feeds the security trigger
+    diff: "<unified diff text from Phase 1>",        // required
+    languages: ["typescript", "react", "database"],  // optional — one reviewer per entry
+    changedFiles: ["src/auth.ts"]                    // optional — feeds the security trigger
   }
 })
 ```

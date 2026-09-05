@@ -8,7 +8,7 @@ origin: ECC
 
 Practical patterns for building production React Native apps with Expo. Covers navigation, state, data fetching, lists, styling, and native APIs. Pairs with the `rules/react-native/` ruleset: rules say *what* to enforce, this skill shows *how*.
 
-Libraries named below (NativeWind, Zustand/Jotai, TanStack Query) are common, well-established options shown for illustration — the patterns matter more than the specific package, and any equivalent works. Zod is used for validation to stay consistent with ECC's existing `typescript/` rules.
+Libraries named below (NativeWind, Zustand/Jotai/MobX-State-Tree, TanStack Query) are common, well-established options shown for illustration — the patterns matter more than the specific package, and any equivalent works. Zod is used for validation to stay consistent with ECC's existing `typescript/` rules.
 
 These patterns assume the managed Expo workflow (Expo Router, EAS, `expo-*` modules) on the New Architecture (the default in recent Expo SDKs, mandatory from SDK 55+). They do NOT assume the browser DOM — React Native has no `<div>`, no URL bar, and no web data-fetching defaults.
 
@@ -74,13 +74,75 @@ Do not duplicate server data into a client store. Each concern has its own home.
 | Concern | Common choices |
 |---------|------|
 | Server state (remote data) | a server-cache library (TanStack Query, SWR) |
-| Client/UI state | a lightweight store (Zustand, Jotai) or Context |
+| Client/UI state | a lightweight store (Zustand, Jotai), MobX-State-Tree, or Context |
 | Route/navigation state | Expo Router params |
 | Form state | a form library (e.g. React Hook Form) + schema validation |
 | Secrets / tokens | `expo-secure-store` |
 | Non-secret persistence | `AsyncStorage` / MMKV |
 
 Prefer local `useState` until state genuinely needs sharing.
+
+### Client state with MobX-State-Tree (MST)
+
+MobX-State-Tree is a valid choice for the client/UI store slot above, alongside Zustand, Jotai, and Context — it trades a little more ceremony for typed models, runtime-checked shape, and built-in snapshots. The separation rule is unchanged: MST holds client state, not a mirror of server data.
+
+Define state as a model with `.views` for derived values and `.actions` for every mutation:
+
+```ts
+import { types, Instance } from 'mobx-state-tree'
+
+const Filter = types
+  .model('Filter', { query: '', onlyOpen: false })
+  .views(self => ({
+    get isActive() { return self.query.length > 0 || self.onlyOpen },
+  }))
+  .actions(self => ({
+    setQuery(q: string) { self.query = q },
+    toggleOnlyOpen() { self.onlyOpen = !self.onlyOpen },
+  }))
+
+export const RootStore = types.model('RootStore', { filter: Filter })
+export type RootStoreType = Instance<typeof RootStore>
+```
+
+Create the root store once and hand it down through a Context provider:
+
+```tsx
+const StoreContext = createContext<RootStoreType | null>(null)
+
+export function StoreProvider({ children }: { children: ReactNode }) {
+  const [store] = useState(() => RootStore.create({ filter: {} }))
+  return <StoreContext.Provider value={store}>{children}</StoreContext.Provider>
+}
+
+export function useStores() {
+  const store = useContext(StoreContext)
+  if (!store) throw new Error('useStores must be used inside StoreProvider')
+  return store
+}
+```
+
+Any component reading observable state must be wrapped in `observer`, or it will not re-render:
+
+```tsx
+import { observer } from 'mobx-react-lite'
+
+export const FilterBar = observer(function FilterBar() {
+  const { filter } = useStores()
+  return (
+    <TextInput value={filter.query} onChangeText={filter.setQuery} />
+  )
+})
+```
+
+MST rules that bite in RN:
+
+- **Never mutate outside an action.** `self.query = q` is only legal inside `.actions`; assigning from a component throws at runtime.
+- **Wrap every reader in `observer`.** A missing `observer` is the usual cause of "the store changed but the screen didn't".
+- **Derive, don't duplicate.** Put computed values in `.views`, not in a second field kept in sync by hand.
+- **Keep server data in the query cache**, not in MST — the same "two sources of truth" anti-pattern listed below applies to MST stores.
+
+For the project-specific store layout, persistence, and conventions, read `mobile-app/docs/architecture/state-mst.md` in the consuming project (path is relative to that project's root, not to this skill).
 
 ### Data fetching: a cache library + Zod
 
