@@ -19,7 +19,7 @@ grep '"dev":' package.json       # is --turbopack already opted in?
 | 16+ only | On 15.x instead |
 |---|---|
 | Turbopack is the **dev default** | Stable but **opt-in**: `next dev --turbopack` |
-| Filesystem caching | Not available |
+| Filesystem caching (default from 16.1) | Not in stable 15.x |
 | Turbopack Bundle Analyzer (experimental, 16.1) | `@next/bundle-analyzer` (webpack), `ANALYZE=true next build` |
 | `proxy.ts` middleware filename | `middleware.ts` is the only convention |
 
@@ -33,9 +33,9 @@ Next.js 16+ uses Turbopack by default for local development: an incremental bund
 
 ## When to Use
 
-- **Turbopack (default dev)**: Use for day-to-day development. Faster cold start and HMR, especially in large apps.
-- **Webpack (legacy dev)**: Use only if you hit a Turbopack bug or rely on a webpack-only plugin in dev. Disable with `--webpack` (or `--no-turbopack` depending on your Next.js version; check the docs for your release).
-- **Production**: Production build behavior (`next build`) may use Turbopack or webpack depending on Next.js version; check the official Next.js docs for your version.
+- **Turbopack** (default dev on 16+, `--turbopack` on 15.x): Use for day-to-day development. Faster cold start and HMR, especially in large apps.
+- **Webpack**: Use only if you hit a Turbopack bug or rely on a webpack-only plugin in dev. On 16+ opt out with `--webpack`; on 15.x you opt *out* by simply omitting `--turbopack`, since webpack is still the default there.
+- **Production**: On 16+ `next build` also uses Turbopack by default (opt out with `--webpack`; a build that finds a custom `webpack` config **fails** rather than silently ignoring it). On 15.x `next build` is webpack unless you pass `--turbopack`.
 
 Use when: developing or debugging Next.js 15.0+ apps, diagnosing slow dev startup or HMR, or optimizing production bundles.
 
@@ -43,22 +43,23 @@ Use when: developing or debugging Next.js 15.0+ apps, diagnosing slow dev startu
 
 - **Turbopack**: Incremental bundler for Next.js dev. With filesystem caching (16.1+) restarts reuse prior work and are much faster (e.g. 5–14x on large projects); on 15.x there is no disk cache, so the win is cold start and HMR only.
 - **Default in dev**: From Next.js 16, `next dev` runs with Turbopack unless disabled.
-- **File-system caching**: Restarts reuse previous work; cache is typically under `.next`. **Not on 15.x at all**; beta and flag-gated on 16.0 (`experimental.turbopackFileSystemCacheForDev: true`); stable and on by default from 16.1.
-- **Bundle Analyzer (Next.js 16.1+)**: Experimental Bundle Analyzer to inspect output and find heavy dependencies; enable via config or experimental flag (see Next.js docs for your version).
+- **File-system caching**: Restarts reuse previous work; cache is typically under `.next`. Not in stable 15.x (experimental on 15.5 canaries only); beta and flag-gated on 16.0 via two separate flags, `experimental.turbopackFileSystemCacheForDev` and `…ForBuild`; on by default from 16.1.
+- **Bundle Analyzer (Next.js 16.1+)**: Experimental Turbopack analyzer to inspect output and find heavy dependencies — run it as a CLI command, `next experimental-analyze`. On 15.x use `@next/bundle-analyzer` instead.
 
 ## Examples
 
 ### Commands
 
 ```bash
-next dev
+next dev              # 16+: Turbopack by default
+next dev --turbopack  # 15.x: Turbopack is stable but opt-in
 next build
 next start
 ```
 
 ### Usage
 
-Run `next dev` for local development with Turbopack. Use the Bundle Analyzer (see Next.js docs) to optimize code-splitting and trim large dependencies. Prefer App Router and server components where possible.
+Run `next dev` for local development — on 16+ that is Turbopack; on 15.x add `--turbopack` or you get webpack. To trim large dependencies, use `next experimental-analyze` (Turbopack, 16.1+) or `@next/bundle-analyzer` with `ANALYZE=true next build` on 15.x. Prefer App Router and server components where possible.
 
 ## Middleware File Naming
 
@@ -72,7 +73,7 @@ The filename change is tied to the **Next.js version**, not to which bundler (Tu
 The rule cuts **both** ways — check the version before flagging either filename:
 
 - **Do not flag `proxy.ts`** in Next.js 16+ projects. It is correct and intentional.
-- **Do not flag `middleware.ts`** in Next.js 15.x or earlier. It is correct there, and `proxy.ts` is not a convention before 16 — that file is silently ignored, so renaming forward **does** break middleware.
+- **Do not flag `middleware.ts`** in Next.js 15.x or earlier. It is correct there, and `proxy.ts` is not a recognized file convention before v16.0.0, so renaming forward **does** break middleware.
 - On 16+, `middleware.ts` is **deprecated but still runs** (Edge-runtime use cases), slated for removal in a future major. So flag it as deprecated if you like; do not claim it is broken.
 
 **The rename is not just the filename.** `proxy.ts` must export a function named `proxy` (or a default export); `middleware.ts` must export `middleware`. Renaming only the file leaves a dead handler either way. The codemod does both:
@@ -81,10 +82,12 @@ The rule cuts **both** ways — check the version before flagging either filenam
 npx @next/codemod@canary middleware-to-proxy .
 ```
 
+**Do not run it on an edge-runtime handler.** Per the v16 upgrade guide: *"The `edge` runtime is **NOT** supported in `proxy`. The `proxy` runtime is `nodejs`, and it cannot be configured. If you want to continue using the `edge` runtime, keep using `middleware`."* So `runtime: 'edge'` is the one case where staying on the deprecated `middleware.ts` is correct on 16+.
+
 Reference: [Proxy docs](https://nextjs.org/docs/app/getting-started/proxy), [Renaming Middleware to Proxy](https://nextjs.org/docs/messages/middleware-to-proxy)
 
 ## Best Practices
 
 - Turbopack dev is stable from 15.0; filesystem caching needs 16.1+. Do not recommend a major upgrade solely for Turbopack.
-- If dev is slow, ensure you're on Turbopack (default) and that the cache isn't being cleared unnecessarily.
+- If dev is slow, ensure you're actually on Turbopack (default on 16+, `--turbopack` on 15.x) and that the cache isn't being cleared unnecessarily.
 - For production bundle size issues, use the official Next.js bundle analysis tooling for your version.
