@@ -21,11 +21,11 @@ The Review→Verify barrier is deliberate: deduping before verification is exact
 
 ### Invocation
 
-The main loop computes the diff, then calls the Workflow tool:
+The main loop computes the diff, then calls the Workflow tool **by name**. A plugin-shipped workflow is registered as `ecc:<name>`; a relative `scriptPath` resolves against the working directory (the repo being reviewed), not against the plugin, so it only works from a checkout of this repo. Verified: `Workflow({name: "ecc:orch-review"})` loads and runs its own input validation, while `Workflow({scriptPath: "workflows/orch-review.workflow.js"})` from another repo returns "Workflow script file not found".
 
 ```jsonc
 Workflow({
-  scriptPath: "workflows/orch-review.workflow.js",
+  name: "ecc:orch-review",
   args: {
     diff: "<unified git diff text>",   // required
     languages: ["typescript", "react"], // optional — one reviewer per entry

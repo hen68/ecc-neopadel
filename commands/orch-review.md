@@ -81,12 +81,17 @@ why the table above lists only the three backed reviewers.
 
 ## Phase 2 — INVOKE
 
-Call the Workflow tool. The workflow validates its own input and fails closed on
-a missing or empty diff, so always pass a non-empty `diff`.
+Call the Workflow tool **by name**. A plugin-shipped workflow is registered as
+`ecc:<name>`; a relative `scriptPath` resolves against the working directory —
+the repo being reviewed, not the plugin — so it fails with "Workflow script file
+not found" everywhere except a checkout of this repo.
+
+The workflow validates its own input and fails closed on a missing or empty
+diff, so always pass a non-empty `diff`.
 
 ```jsonc
 Workflow({
-  scriptPath: "workflows/orch-review.workflow.js",
+  name: "ecc:orch-review",
   args: {
     diff: "<unified diff text from Phase 1>",        // required
     languages: ["typescript", "react", "database"],  // optional — one reviewer per entry
