@@ -90,9 +90,15 @@ Use the first available CLI:
 
 **Codex CLI** (if installed)
 ```bash
-codex exec --sandbox read-only -m gpt-5.4 -C "$(pwd)" - < "$PROMPT_FILE"
+codex exec --sandbox read-only -C "$(pwd)" - < "$PROMPT_FILE"
 rm -f "$PROMPT_FILE"
 ```
+Omit `-m`/model selection: confirmed live 2026-09-12 that a ChatGPT-account-authenticated Codex CLI
+(`stored auth mode: chatgpt` in `codex doctor`) hard-rejects `-m gpt-5.4` with `the 'gpt-5.4' model is
+not supported when using Codex with a ChatGPT account` (HTTP 400) — this is an auth-mode restriction,
+not a typo or a stale model name. Codex's own default model works and returns a valid structured
+verdict. If you're on API-key auth instead of a ChatGPT account, `-m gpt-5.4` (or another explicit
+model) may work for you — check `codex doctor`'s `auth mode` line before adding it back.
 
 **Gemini CLI** (if installed and codex is not)
 ```bash
@@ -169,7 +175,10 @@ Result:     [PUSHED / NICE — AWAITING PUSH CONFIRMATION / ESCALATED TO USER]
 
 - Reviewer A (Claude Opus) always runs — guarantees at least one strong reviewer regardless of tooling.
 - Model diversity is the goal for Reviewer B. GPT-5.4 or Gemini 2.5 Pro gives true independence — different training data, different biases, different blind spots. The Claude-only fallback still provides value via context isolation but loses model diversity.
-- Strongest available models are used: Opus for Reviewer A, GPT-5.4 or Gemini 2.5 Pro for Reviewer B.
+- Strongest available model is used for Reviewer A (Opus). Reviewer B uses Codex/Gemini's own default
+  model rather than a hardcoded one — an explicit `-m` can reject outright depending on the CLI's auth
+  mode (see the Codex CLI note above), so this intentionally defers to whatever each CLI considers its
+  best default.
 - External reviewers run with `--sandbox read-only` (Codex) to prevent repo mutation during review.
 - Fresh reviewers each round prevents anchoring bias from prior findings.
 - The rubric is the most important input. Tighten it if reviewers rubber-stamp or flag subjective style issues.

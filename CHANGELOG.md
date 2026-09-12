@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## 2.2.3 - 2026-09-12
+
+### Fixed
+
+- `/santa-loop` Reviewer B's Codex invocation hardcoded `-m gpt-5.4`, which fails outright
+  (`the 'gpt-5.4' model is not supported when using Codex with a ChatGPT account`, HTTP 400) on a
+  ChatGPT-account-authenticated Codex CLI — confirmed live by actually running Reviewer B end-to-end
+  against a real file. Now omits `-m` and lets Codex use its own default model, which returns a valid
+  structured verdict; documented that API-key auth may support an explicit `-m` if desired.
+
 ## 2.2.2 - 2026-09-12
 
 ### Fixed
