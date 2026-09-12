@@ -107,7 +107,7 @@ In all cases, the reviewer must return the same structured JSON verdict as Revie
 
 ### Step 4: Verdict Gate
 
-- **Both PASS** → **NICE** — proceed to Step 6 (push)
+- **Both PASS** → **NICE** — proceed to Step 6 (confirm & push)
 - **Either FAIL** → **NAUGHTY** — merge all critical issues from both reviewers, deduplicate, proceed to Step 5
 
 ### Step 5: Fix Cycle (NAUGHTY path)
@@ -134,13 +134,15 @@ Manual review required before proceeding.
 
 Do NOT push.
 
-### Step 6: Push (NICE path)
+### Step 6: Confirm & Push (NICE path)
 
-When both reviewers return PASS:
+Both reviewers passing clears the code to ship — it does NOT push it automatically. Present the verdict (both PASS, issues found by each, iteration count) and explicitly ask the user for confirmation before running:
 
 ```bash
 git push -u origin HEAD
 ```
+
+Never push without that confirmation, even after a clean NICE verdict, and even if an earlier turn in this same session already confirmed a push once — a prior approval does not carry forward to a new push. If the user declines or doesn't respond, stop here and report NICE-but-not-pushed; do not treat silence as approval.
 
 ### Step 7: Final Report
 
@@ -160,7 +162,7 @@ Agreement:
   Reviewer B only:   [issues only B caught]
 
 Iterations: [N]/3
-Result:     [PUSHED / ESCALATED TO USER]
+Result:     [PUSHED / NICE — AWAITING PUSH CONFIRMATION / ESCALATED TO USER]
 ```
 
 ## Notes
@@ -172,4 +174,4 @@ Result:     [PUSHED / ESCALATED TO USER]
 - Fresh reviewers each round prevents anchoring bias from prior findings.
 - The rubric is the most important input. Tighten it if reviewers rubber-stamp or flag subjective style issues.
 - Commits happen on NAUGHTY rounds so fixes are preserved even if the loop is interrupted.
-- Push only happens after NICE — never mid-loop.
+- Push only happens after NICE, and only after the user explicitly confirms it — never mid-loop, and never automatic even on a clean NICE.

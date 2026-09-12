@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Fixed
+
+- `/santa-loop` no longer auto-pushes on a NICE verdict (`git push -u origin HEAD` ran unconditionally in Step 6) — it now presents the verdict and requires explicit user confirmation before pushing, matching the "never push without fresh confirmation" convention the rest of the toolkit already follows elsewhere.
+
 ## 2.2.0 - 2026-08-25
 
 ### Added
