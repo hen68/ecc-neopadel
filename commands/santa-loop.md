@@ -47,20 +47,39 @@ Add domain-specific criteria based on file types (e.g., type safety for TS, memo
 
 Launch two reviewers **in parallel** using the Agent tool (both in a single message for concurrent execution). Both must complete before proceeding to the verdict gate.
 
-Each reviewer evaluates every rubric criterion as PASS or FAIL, then returns structured JSON:
+Each reviewer evaluates every rubric criterion with a **typed verdict**, not a plain PASS/FAIL —
+per the 2026-09-12 tooling research (`docs/ai-agent-verification-tooling-research-2026-09-12.md` in
+the neopadel repo, recommendation #3; independently reinforced by three unrelated projects'
+convergence on typed verdicts, cited there): collapsing "this fails, and here's the concrete broken
+behavior" and "this fails, but it's a subjective/stylistic worry with no concrete evidence" into the
+same FAIL loses exactly the distinction that determines whether the loop should actually block. Each
+criterion gets one of:
+
+- **`AGREE`** — meets the pass condition, nothing to report.
+- **`DISAGREE_EVIDENCE`** — fails, and the reviewer can point to a concrete failure: specific
+  input/state → wrong output, crash, security hole, or a requirement the diff doesn't meet. This is
+  the only result that blocks.
+- **`DISAGREE_CONCERN`** — the reviewer is uneasy but cannot state a concrete failure (a style
+  preference, a "this feels risky" hunch, a suggestion). Reported, never blocking.
+
+Return structured JSON:
 
 ```json
 {
-  "verdict": "PASS" | "FAIL",
+  "verdict": "NICE" | "NAUGHTY",
   "checks": [
-    {"criterion": "...", "result": "PASS|FAIL", "detail": "..."}
+    {"criterion": "...", "result": "AGREE" | "DISAGREE_EVIDENCE" | "DISAGREE_CONCERN", "detail": "..."}
   ],
-  "critical_issues": ["..."],
+  "critical_issues": ["... one per DISAGREE_EVIDENCE check, each stating the concrete failure ..."],
+  "concerns": ["... one per DISAGREE_CONCERN check — advisory, never blocking ..."],
   "suggestions": ["..."]
 }
 ```
 
-The verdict gate (Step 4) maps these to NICE/NAUGHTY: both PASS → NICE, either FAIL → NAUGHTY.
+A reviewer's own `verdict` is `NAUGHTY` iff at least one criterion is `DISAGREE_EVIDENCE` —
+`DISAGREE_CONCERN`-only results still verdict `NICE`, with the concerns carried through to the final
+report instead of silently dropped. The verdict gate (Step 4) maps these to the loop's own NICE/NAUGHTY:
+both `NICE` → NICE, either `NAUGHTY` → NAUGHTY.
 
 #### Reviewer A: Claude Agent (always runs)
 
@@ -113,27 +132,36 @@ In all cases, the reviewer must return the same structured JSON verdict as Revie
 
 ### Step 4: Verdict Gate
 
-- **Both PASS** → **NICE** — proceed to Step 6 (confirm & push)
-- **Either FAIL** → **NAUGHTY** — merge all critical issues from both reviewers, deduplicate, proceed to Step 5
+- **Both `NICE`** → **NICE** — proceed to Step 6 (confirm & push). Merge and deduplicate any
+  `concerns` from both reviewers and carry them into the final report as advisory notes — they do
+  not block, but a real NICE-with-concerns ship should not silently drop them.
+- **Either `NAUGHTY`** → **NAUGHTY** — merge all `critical_issues` (the `DISAGREE_EVIDENCE` items)
+  from both reviewers, deduplicate, proceed to Step 5. `concerns` from a `NAUGHTY` round are still
+  worth fixing opportunistically in the same pass but never gate the loop by themselves.
 
 ### Step 5: Fix Cycle (NAUGHTY path)
 
-1. Display all critical issues from both reviewers
-2. Fix every flagged issue — change only what was flagged, no drive-by refactors
+1. Display all critical issues (`DISAGREE_EVIDENCE`) from both reviewers — fix these; they gate the
+   loop. Display any `concerns` (`DISAGREE_CONCERN`) too, and fix them opportunistically in the same
+   pass if cheap, but do not treat leaving one unaddressed as a reason to re-loop.
+2. Fix every flagged critical issue — change only what was flagged, no drive-by refactors
 3. Commit all fixes in a single commit:
    ```
    fix: address santa-loop review findings (round N)
    ```
 4. Re-run Step 3 with **fresh reviewers** (no memory of previous rounds)
-5. Repeat until both return PASS
+5. Repeat until both return `NICE`
 
 **Maximum 3 iterations.** If still NAUGHTY after 3 rounds, stop and present remaining issues:
 
 ```
 SANTA LOOP ESCALATION (exceeded 3 iterations)
 
-Remaining issues after 3 rounds:
+Remaining critical issues after 3 rounds (DISAGREE_EVIDENCE):
 - [list all unresolved critical issues from both reviewers]
+
+Remaining concerns (DISAGREE_CONCERN, non-blocking):
+- [list any concerns still open]
 
 Manual review required before proceeding.
 ```
@@ -142,7 +170,7 @@ Do NOT push.
 
 ### Step 6: Confirm & Push (NICE path)
 
-Both reviewers passing clears the code to ship — it does NOT push it automatically. Present the verdict (both PASS, issues found by each, iteration count) and explicitly ask the user for confirmation before running:
+Both reviewers passing clears the code to ship — it does NOT push it automatically. Present the verdict (both NICE, any concerns found by each, iteration count) and explicitly ask the user for confirmation before running:
 
 ```bash
 git push -u origin HEAD
@@ -159,13 +187,16 @@ Print the output report (see Output section below).
 ```
 SANTA VERDICT: [NICE / NAUGHTY (escalated)]
 
-Reviewer A (Claude Opus):   [PASS/FAIL]
-Reviewer B ([model used]):  [PASS/FAIL]
+Reviewer A (Claude Opus):   [NICE/NAUGHTY]
+Reviewer B ([model used]):  [NICE/NAUGHTY]
 
-Agreement:
+Agreement (DISAGREE_EVIDENCE — blocking):
   Both flagged:      [issues caught by both]
   Reviewer A only:   [issues only A caught]
   Reviewer B only:   [issues only B caught]
+
+Concerns (DISAGREE_CONCERN — advisory, non-blocking):
+  [merged, deduplicated concerns from both reviewers, or "None"]
 
 Iterations: [N]/3
 Result:     [PUSHED / NICE — AWAITING PUSH CONFIRMATION / ESCALATED TO USER]

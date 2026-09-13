@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+## 2.2.4 - 2026-09-12
+
+### Changed
+
+- `/santa-loop` reviewer verdicts are now typed disagreement (`AGREE` / `DISAGREE_EVIDENCE` /
+  `DISAGREE_CONCERN`) instead of plain PASS/FAIL per criterion, per recommendation #3 of
+  `docs/ai-agent-verification-tooling-research-2026-09-12.md` (neopadel repo) — independently
+  reinforced by three unrelated projects' convergence on typed verdicts. Only `DISAGREE_EVIDENCE`
+  (a stated concrete failure) blocks the loop; `DISAGREE_CONCERN` (a subjective/stylistic worry with
+  no concrete evidence) is surfaced in the final report as advisory and never gates NICE/NAUGHTY.
+
 ## 2.2.3 - 2026-09-12
 
 ### Fixed
