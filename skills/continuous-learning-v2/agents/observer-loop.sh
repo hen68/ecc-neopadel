@@ -220,31 +220,42 @@ PROMPT
     return
   fi
 
-  timeout_seconds="${ECC_OBSERVER_TIMEOUT_SECONDS:-120}"
+  # 120s made the watchdog kill the majority of cycles outright: production
+  # observer.log showed exit-143 (SIGTERM-by-watchdog) as the single largest
+  # failure mode (~66% of ~1000 failed cycles), always on the 500-line-capped
+  # batch, with zero log progress between "Using last 500 of N" and the kill —
+  # i.e. haiku frequently doesn't finish within 120s and success at that batch
+  # size was closer to a coin flip than a reliable outcome. Doubled to give it
+  # real headroom. (found while investigating the 95% cycle-failure rate)
+  timeout_seconds="${ECC_OBSERVER_TIMEOUT_SECONDS:-240}"
   # Auto-scale max_turns proportional to analysis batch size when not explicitly set.
   # The old hardcoded default of 20 is insufficient for the 500-line MAX_ANALYSIS_LINES
   # default: Claude hits --max-turns before it can write all discovered instinct files.
-  # Formula: 1 turn per 10 analysis lines, floor 20, cap 100. (#2035)
+  # Formula: 1 turn per 10 analysis lines, floor 30, cap 100. (#2035; floor raised
+  # from 20 after "Reached max turns (20)" turned out to be the single most common
+  # failure value in production — small batches with several 3+-occurrence patterns
+  # still need more than one turn per pattern once read/write/reasoning overhead is
+  # counted, so the old floor was too tight, not just the large-batch case #2035 fixed)
   if [ -n "${ECC_OBSERVER_MAX_TURNS:-}" ]; then
     max_turns="${ECC_OBSERVER_MAX_TURNS}"
   else
     max_turns=$(( analysis_count / 10 ))
-    if [ "$max_turns" -lt 20 ]; then max_turns=20; fi
+    if [ "$max_turns" -lt 30 ]; then max_turns=30; fi
     if [ "$max_turns" -gt 100 ]; then max_turns=100; fi
   fi
   exit_code=0
 
-  # Sanitize max_turns. The auto-scaled path above always yields a valid value >=20,
+  # Sanitize max_turns. The auto-scaled path above always yields a valid value >=30,
   # but an explicit ECC_OBSERVER_MAX_TURNS override may be non-numeric, empty, or too
-  # small, so guard here and fall back to the safe default of 20.
+  # small, so guard here and fall back to the safe default of 30.
   case "$max_turns" in
     ''|*[!0-9]*)
-      max_turns=20
+      max_turns=30
       ;;
   esac
 
   if [ "$max_turns" -lt 4 ]; then
-    max_turns=20
+    max_turns=30
   fi
 
   # Ensure CWD is PROJECT_DIR so the relative analysis_relpath resolves correctly
@@ -260,7 +271,7 @@ PROMPT
   # "no stdin data received", and exits 1 before reading the analysis file (#2452).
   # Model is configurable via ECC_OBSERVER_MODEL (defaults to haiku for cost efficiency);
   # e.g. ECC_OBSERVER_MODEL=opus for higher-quality instinct extraction. Heavier models are
-  # slower — consider raising ECC_OBSERVER_TIMEOUT_SECONDS (default 120s) so the watchdog
+  # slower — consider raising ECC_OBSERVER_TIMEOUT_SECONDS (default 240s) so the watchdog
   # doesn't kill the analysis mid-run.
   ECC_SKIP_OBSERVE=1 ECC_HOOK_PROFILE=minimal claude --model "${ECC_OBSERVER_MODEL:-haiku}" --max-turns "$max_turns" --print \
     --allowedTools "Read,Write" \

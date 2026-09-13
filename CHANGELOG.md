@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+## 2.2.5 - 2026-09-13
+
+### Fixed
+
+- `continuous-learning-v2` observer analysis was failing ~95% of cycles: `ECC_OBSERVER_TIMEOUT_SECONDS`
+  defaulted to 120s, but the watchdog killed the majority of cycles outright (SIGTERM, ~66% of ~1000
+  failed cycles in production, always at the 500-line-capped batch, with zero log progress before the
+  kill). Raised the default to 240s. Separately, `max_turns`'s auto-scale floor of 20 was still too low
+  for small batches with several 3+-occurrence patterns (~33% of failures, "Reached max turns (20)" the
+  single most common failure value) — raised the floor to 30, including the `ECC_OBSERVER_MAX_TURNS`
+  sanitize/fallback path which still hardcoded the old floor.
+
 ## 2.2.4 - 2026-09-12
 
 ### Changed
