@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+## 2.2.6 - 2026-09-13
+
+### Fixed
+
+- `/santa-loop` Reviewer B: Gemini CLI access was revoked for individual accounts, so it's replaced
+  with Antigravity (`agy`). Verified live: correct invocation is `agy --print="$PROMPT" --output-format
+  json --model gemini-3.1-pro-high --sandbox` with a 3-attempt retry loop (the account eligibility
+  gate is flaky, not binary — ~2/3 failure rate observed across identical back-to-back calls,
+  confirmed independently by two accounts), an explicit no-tools instruction appended to the prompt
+  (without it, `agy` sometimes tries `ListDir`/`read_file` on its own and headless mode silently
+  denies the call, returning `status: SUCCESS` with an empty `response`), and `printf '%s\n' "$RESULT"`
+  instead of `echo` before piping through `jq` (zsh mangles the JSON's embedded backslash escapes via
+  `echo`, causing intermittent parse failures independent of `agy` itself).
+
 ## 2.2.5 - 2026-09-13
 
 ### Fixed
