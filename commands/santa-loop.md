@@ -94,7 +94,7 @@ Launch an Agent (subagent_type: `code-reviewer`, model: `opus`) with the full ru
 First, detect which CLIs are available:
 ```bash
 command -v codex >/dev/null 2>&1 && echo "codex" || true
-command -v gemini >/dev/null 2>&1 && echo "gemini" || true
+command -v agy >/dev/null 2>&1 && echo "agy" || true
 ```
 
 Build the reviewer prompt (identical rubric + instructions as Reviewer A) and write it to a unique temp file:
@@ -119,13 +119,40 @@ not a typo or a stale model name. Codex's own default model works and returns a 
 verdict. If you're on API-key auth instead of a ChatGPT account, `-m gpt-5.4` (or another explicit
 model) may work for you — check `codex doctor`'s `auth mode` line before adding it back.
 
-**Gemini CLI** (if installed and codex is not)
+**Antigravity CLI** (if installed and codex is not)
 ```bash
-gemini -p "$(cat "$PROMPT_FILE")" -m gemini-2.5-pro
+AGY_PROMPT="$(cat "$PROMPT_FILE")
+Do not use any tools. Do not read, list, or search any files — everything you need is already in
+this message. Reply with the JSON verdict only."
+
+for attempt in 1 2 3; do
+  RESULT=$(agy --print="$AGY_PROMPT" --output-format json --model gemini-3.1-pro-high --sandbox 2>&1)
+  STATUS=$(printf '%s\n' "$RESULT" | tail -1 | jq -r '.status // empty' 2>/dev/null)
+  RESPONSE=$(printf '%s\n' "$RESULT" | tail -1 | jq -r '.response // empty' 2>/dev/null)
+  if [ "$STATUS" = "SUCCESS" ] && [ -n "$RESPONSE" ]; then
+    printf '%s\n' "$RESPONSE"
+    break
+  fi
+  echo "agy attempt $attempt failed (status=$STATUS), retrying..." >&2
+  sleep 5
+done
 rm -f "$PROMPT_FILE"
 ```
+Strip any leading/trailing ```` ```json ```` fence from `$RESPONSE` before parsing — `agy` sometimes
+wraps its JSON verdict in one despite the "JSON only" instruction; Reviewer A's Claude Agent output
+never does this.
 
-**Claude Agent fallback** (only if neither `codex` nor `gemini` is installed)
+Verified live 2026-09-13 — every row below is a confirmed gotcha, not theoretical, and every fix is
+already applied in the script above:
+
+| Gotcha | Symptom | Fix |
+|---|---|---|
+| Account eligibility gate is flaky, not binary | ~2/3 of identical back-to-back `agy` calls fail with "not eligible for Gemini Code Assist for individuals" (confirmed on two accounts) | 3-attempt retry; fall back to Claude Agent if all 3 fail |
+| Agentic tool use gets silently denied | Without a no-tools instruction, `agy` may try `ListDir`/`read_file` on its own; headless mode denies it, returning `status:SUCCESS` with an **empty** `response` | No-tools instruction appended to the prompt, and always check `-n "$RESPONSE"` — not just `status` |
+| A bare file path is not file contents | `-p <path>` treats the path as prompt text, which triggers the same tool-denial failure above | Always pass content inline via `--print="$AGY_PROMPT"`, never a path |
+| `echo` mangles JSON under zsh | `echo "$RESULT" \| jq` intermittently fails to parse even a valid `SUCCESS` response, because zsh interprets the JSON's own `\"`/`\n` escapes | Use `printf '%s\n' "$RESULT"`, never `echo`, before piping into `jq` |
+
+**Claude Agent fallback** (only if neither `codex` nor `agy` is installed, or `agy` exhausts its 3 retries)
 Launch a second Claude Agent (subagent_type: `code-reviewer`, model: `opus`). Log a warning that both reviewers share the same model family — true model diversity was not achieved but context isolation is still enforced.
 
 In all cases, the reviewer must return the same structured JSON verdict as Reviewer A.
@@ -205,12 +232,14 @@ Result:     [PUSHED / NICE — AWAITING PUSH CONFIRMATION / ESCALATED TO USER]
 ## Notes
 
 - Reviewer A (Claude Opus) always runs — guarantees at least one strong reviewer regardless of tooling.
-- Model diversity is the goal for Reviewer B. GPT-5.4 or Gemini 2.5 Pro gives true independence — different training data, different biases, different blind spots. The Claude-only fallback still provides value via context isolation but loses model diversity.
-- Strongest available model is used for Reviewer A (Opus). Reviewer B uses Codex/Gemini's own default
-  model rather than a hardcoded one — an explicit `-m` can reject outright depending on the CLI's auth
-  mode (see the Codex CLI note above), so this intentionally defers to whatever each CLI considers its
-  best default.
-- External reviewers run with `--sandbox read-only` (Codex) to prevent repo mutation during review.
+- Model diversity is the goal for Reviewer B. GPT-5.4 (Codex) or Gemini 3.1 Pro (Antigravity/`agy`) gives true independence — different training data, different biases, different blind spots. The Claude-only fallback still provides value via context isolation but loses model diversity.
+- Strongest available model is used for Reviewer A (Opus). Codex omits `-m`/model selection and defers
+  to its own default — an explicit `-m` can reject outright depending on the CLI's auth mode (see the
+  Codex CLI note above). `agy`, by contrast, is pinned to `--model gemini-3.1-pro-high` explicitly:
+  unlike Codex, no rejection was observed when explicit, and `agy`'s no-`--model` default behavior was
+  never tested, so pinning was the safer verified choice — revisit if `agy models` deprecates that slug.
+- External reviewers run in a sandboxed/read-only mode to prevent repo mutation during review — `--sandbox read-only` for Codex, `--sandbox` for `agy` (terminal restrictions; not documented as strictly read-only, so treat as best-effort, not a guarantee).
+- `agy`'s gotchas (eligibility flakiness, tool-denial, prompt format, `printf` vs `echo`) are in the gotchas table above. If it starts failing consistently rather than the ~2/3 flaky rate, suspect an account-side eligibility change over a wiring bug.
 - Fresh reviewers each round prevents anchoring bias from prior findings.
 - The rubric is the most important input. Tighten it if reviewers rubber-stamp or flag subjective style issues.
 - Commits happen on NAUGHTY rounds so fixes are preserved even if the loop is interrupted.
