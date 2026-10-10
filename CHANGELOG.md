@@ -6,7 +6,7 @@
 
 ### Removed
 
-- Pruned skills, commands and agents unused in Neopadel (planning/orch-*, gan-*, generic pr/review/build/security commands, framework pattern skills, 16 unused agents) to cut `/context` cost. Kept: orch-review, santa-loop, santa-method, session and evolve commands, react-performance, seo, motion-foundations, continuous-learning-v2 and the reviewer/planner agents. Install-manifest paths, catalog counts and the command registry were updated to match.
+- Pruned skills, commands and agents unused in Neopadel (planning/orch-*, gan-*, generic pr/review/build/security commands, framework pattern skills, unused agents incl. planner) to cut `/context` cost. Kept: orch-review, santa-loop, santa-method, session and evolve commands, react-performance, seo, motion-foundations, tdd-workflow, e2e-testing, continuous-learning-v2 and the reviewer, e2e-runner, pr-test-analyzer, silent-failure-hunter, performance-optimizer and code-simplifier agents. Install-manifest paths, catalog counts and the command registry were updated to match.
 
 ### Changed
 

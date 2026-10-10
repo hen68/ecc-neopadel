@@ -42,13 +42,13 @@ APPLY=0
 #   agent-harness/eval, ECC self-mgmt/orchestration, frontend/design/a11y, JS backend/DB.
 KEEP_SKILLS=(
   # v2.2.8 prune (Neopadel /context audit): only what the monorepo uses; do not re-add without a reason
-  continuous-learning-v2 motion-foundations react-performance santa-method seo
+  continuous-learning-v2 e2e-testing motion-foundations react-performance santa-method seo tdd-workflow
 )
 
 # --- AGENTS (*.md under agents/) ----------------------------------------------
 KEEP_AGENTS=(
   # v2.2.8 prune (Neopadel /context audit): only what the monorepo uses; do not re-add without a reason
-  code-explorer code-reviewer database-reviewer planner react-reviewer security-reviewer seo-specialist typescript-reviewer
+  code-explorer code-reviewer code-simplifier database-reviewer e2e-runner performance-optimizer pr-test-analyzer react-reviewer security-reviewer seo-specialist silent-failure-hunter typescript-reviewer
 )
 
 # --- COMMANDS (*.md under commands/) ------------------------------------------

@@ -10,10 +10,12 @@ model:
     - claude-sonnet-4-6
 skills:
   - continuous-learning-v2
+  - e2e-testing
   - motion-foundations
   - react-performance
   - santa-method
   - seo
+  - tdd-workflow
 commands:
   - auto-update
   - evolve
