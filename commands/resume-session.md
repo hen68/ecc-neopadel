@@ -123,6 +123,9 @@ between eligible candidates.
 **Session file references files that no longer exist:**
 Note this during the briefing — "WARNING: `path/to/file.ts` referenced in session but not found on disk."
 
+**Session file's Branch / Worktree differs from the current one** (`git branch --show-current`, `git rev-parse --show-toplevel`):
+Warn "WARNING: session was saved on <branch> in <worktree>; you are on <branch> in <worktree>" so parallel worktree sessions do not resume each other's state, then proceed normally.
+
 **Session file is from more than 7 days ago:**
 Note the gap — "WARNING: This session is from N days ago (threshold: 7 days). Things may have changed." — then proceed normally.
 

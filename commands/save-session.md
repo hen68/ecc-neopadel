@@ -73,6 +73,7 @@ Wait for confirmation. Make edits if requested.
 **Started:** [approximate time if known]
 **Last Updated:** [current time]
 **Project:** [project name or path]
+**Branch / Worktree:** [git branch] / [worktree path]
 **Topic:** [one-line summary of what this session was about]
 
 ---

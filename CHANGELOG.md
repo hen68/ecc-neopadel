@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 2.2.9 - 2026-10-10
+
+### Changed
+
+- `/save-session` records Branch / Worktree in the header; `/resume-session` warns when they differ from the current ones.
+
 ## 2.2.8 - 2026-10-10
 
 ### Removed
