@@ -41,66 +41,20 @@ APPLY=0
 # Base curation (carried from v1) + adopted v2.0.0 additions across four groups:
 #   agent-harness/eval, ECC self-mgmt/orchestration, frontend/design/a11y, JS backend/DB.
 KEEP_SKILLS=(
-  # -- base (v1 keep-list) --
-  agent-introspection-debugging ai-regression-testing
-  api-design backend-patterns
-  blueprint ck coding-standards
-  continuous-learning-v2 cost-tracking council
-  deep-research deployment-patterns docker-patterns e2e-testing
-  error-handling exa-search
-  gateguard git-workflow github-ops
-  make-interfaces-feel-better nextjs-turbopack
-  production-audit
-  prompt-optimizer react-patterns react-performance react-testing
-  redis-patterns regex-vs-llm-structured-text repo-scan research-ops rules-distill santa-method
-  search-first security-review security-scan skill-scout
-  strategic-compact tdd-workflow terminal-ops verification-loop
-  # -- v2 adopted: agent-harness & eval --
-  gan-style-harness
-  # -- v2 adopted: ECC self-mgmt & orchestration --
-  orch-add-feature orch-build-mvp orch-change-feature orch-fix-defect orch-pipeline orch-refine-code
-  # -- v2 adopted: frontend/design & a11y --
-  design-system accessibility frontend-a11y frontend-design-direction plan-canvas
-  motion-foundations motion-patterns
-  # -- v2 adopted: JS backend & DB --
-  database-migrations react-native-patterns
-  # -- v2 adopted: QA / security / research / ops (post-review, note.txt) --
-  browser-qa canary-watch codehealth-mcp iterative-retrieval knowledge-ops
-  security-bounty-hunter seo
-  # -- restored: confirmed real historical usage, wrongly cut as "dead code" --
-  agent-self-evaluation
+  # v2.2.8 prune (Neopadel /context audit): only what the monorepo uses; do not re-add without a reason
+  continuous-learning-v2 motion-foundations react-performance santa-method seo
 )
 
 # --- AGENTS (*.md under agents/) ----------------------------------------------
 KEEP_AGENTS=(
-  # -- base (v1) --
-  architect build-error-resolver code-explorer code-reviewer code-simplifier comment-analyzer
-  e2e-runner
-  loop-operator performance-optimizer planner pr-test-analyzer react-build-resolver react-reviewer refactor-cleaner
-  security-reviewer seo-specialist silent-failure-hunter tdd-guide type-design-analyzer typescript-reviewer
-  # -- v2 adopted: agent-harness & eval --
-  gan-evaluator gan-generator gan-planner
-  # -- restored: confirmed real historical usage, wrongly cut as "dead code" --
-  database-reviewer
+  # v2.2.8 prune (Neopadel /context audit): only what the monorepo uses; do not re-add without a reason
+  code-explorer code-reviewer database-reviewer planner react-reviewer security-reviewer seo-specialist typescript-reviewer
 )
 
 # --- COMMANDS (*.md under commands/) ------------------------------------------
 KEEP_COMMANDS=(
-  # -- base (v1) --
-  build-fix checkpoint code-review cost-report ecc-guide evolve
-  model-route
-  plan plan-prd pr project-init projects
-  react-build react-review react-test resume-session review-pr santa-loop
-  save-session sessions setup-pm skill-create skill-health test-coverage
-  update-docs
-  # -- v2 adopted: ECC self-mgmt & orchestration --
-  harness-audit auto-update update-codemaps refactor-clean quality-gate
-  orch-add-feature orch-build-mvp orch-change-feature orch-fix-defect orch-refine-code orch-review
-  gan-build gan-design
-  # -- v2 adopted: frontend/design --
-  plan-canvas
-  # -- restored: confirmed real historical usage, wrongly cut as orphaned PRP family --
-  prp-plan prp-pr
+  # v2.2.8 prune (Neopadel /context audit): only what the monorepo uses; do not re-add without a reason
+  auto-update evolve orch-review resume-session santa-loop save-session setup-pm
 )
 
 # --- RULES (directories under rules/) -----------------------------------------
