@@ -343,8 +343,8 @@
     },
     {
       "command": "santa-loop",
-      "description": "Adversarial dual-review convergence loop — two independent model reviewers must both approve before code ships.",
-      "type": "review",
+      "description": "Adversarial dual-review convergence loop — Codex and DeepSeek (via opencode) must both return NICE before code ships.",
+      "type": "testing",
       "primaryAgents": [],
       "allAgents": [],
       "skills": [],
@@ -430,8 +430,8 @@
       "orchestration": 6,
       "planning": 2,
       "refactoring": 1,
-      "review": 6,
-      "testing": 23
+      "review": 5,
+      "testing": 24
     },
     "topAgents": [
       {
