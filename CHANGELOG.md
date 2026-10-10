@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+## 2.2.7 - 2026-10-10
+
+### Changed
+
+- `/santa-loop` Reviewers are now Codex (A) and DeepSeek via `opencode run` (B); Claude Opus is only the
+  fallback for a failed slot (or a third reviewer with `--opus`; `--no-deepseek` keeps the diff away from a
+  third party). Scope is the whole branch (`git merge-base origin/main HEAD`), an outbound secret guard runs
+  before any external send, the verdict is recomputed from the typed checks and an unparsable reviewer output
+  fails closed (never NICE). `agy` is kept as an optional fallback. Verified live: `opencode run` needs the
+  message before `-f`, an absolute `-f` path, an empty `--dir` (no sandbox flag exists) and the reply is the
+  `.type=="text"` events of `--format json`.
+
 ## 2.2.6 - 2026-09-13
 
 ### Fixed
