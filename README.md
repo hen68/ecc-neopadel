@@ -162,13 +162,13 @@ Instead of rebuilding that process in every prompt, you install it once and make
 
 ECC is MIT-licensed open source. It works best with Claude Code today, has a supported Codex sync path, and provides capability-limited adapters for Cursor, OpenCode, Gemini, Zed, GitHub Copilot, Antigravity, Qwen, and other harnesses. See the [support status matrix](#platform-support) before assuming feature parity.
 
-Access to 24 agents, 64 skills, and 41 legacy command shims, plus hooks, rules, memory, continuous learning, and AgentShield security scanning. The agents are specialized for planning, review, build repair, security, architecture, and domain work.
+Access to 8 agents, 5 skills, and 7 legacy command shims, plus hooks, rules, memory, continuous learning, and AgentShield security scanning. The agents are specialized for planning, review, build repair, security, architecture, and domain work.
 
 | Included         |       Count | What it gives you                                                                    |
 | ---------------- | ----------: | ------------------------------------------------------------------------------------ |
-| Agents           |   24 agents | Planning, review, build repair, security, architecture, and domain work              |
-| Skills           |  64 skills | TDD, research, security, docs, frontend, data, ML, operations, and more              |
-| Commands         | 41 commands | Convenient entry points while ECC moves to a skills-first surface                    |
+| Agents           |    8 agents | Planning, review, build repair, security, architecture, and domain work              |
+| Skills           |    5 skills | TDD, research, security, docs, frontend, data, ML, operations, and more              |
+| Commands         |  7 commands | Convenient entry points while ECC moves to a skills-first surface                    |
 | Hooks and memory |     Runtime | Enforcement, session summaries, continuous learning, instincts, and context controls |
 | Rules            |   Selective | Always-loaded standards you choose by language or project                            |
 | AgentShield      |    Included | Scanning for prompts, hooks, MCP config, permissions, secrets, and agent files       |
@@ -1073,7 +1073,7 @@ This repo is the raw code. The guides explain everything.
 
 ```text
 ECC/
-|-- agents/           # 24 specialized subagents for delegation
+|-- agents/           # 8 specialized subagents for delegation
 |-- skills/           # 284 reusable workflows loaded on demand
 |-- commands/         # 94 maintained slash-command shims
 |-- rules/            # opt-in common and language standards

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "totalCommands": 41,
+  "totalCommands": 7,
   "commands": [
     {
       "command": "auto-update",
@@ -10,53 +10,6 @@
       "allAgents": [],
       "skills": [],
       "path": "commands/auto-update.md"
-    },
-    {
-      "command": "build-fix",
-      "description": "Detect the project build system and incrementally fix build/type errors with minimal safe changes.",
-      "type": "refactoring",
-      "primaryAgents": [],
-      "allAgents": [],
-      "skills": [],
-      "path": "commands/build-fix.md"
-    },
-    {
-      "command": "checkpoint",
-      "description": "Create, verify, or list workflow checkpoints after running verification checks.",
-      "type": "testing",
-      "primaryAgents": [],
-      "allAgents": [],
-      "skills": [],
-      "path": "commands/checkpoint.md"
-    },
-    {
-      "command": "code-review",
-      "description": "Code review — local uncommitted changes or GitHub PR (pass PR number/URL for PR mode)",
-      "type": "testing",
-      "primaryAgents": [],
-      "allAgents": [],
-      "skills": [],
-      "path": "commands/code-review.md"
-    },
-    {
-      "command": "cost-report",
-      "description": "Generate a local Claude Code cost report from the ECC cost-tracker metrics log.",
-      "type": "testing",
-      "primaryAgents": [],
-      "allAgents": [],
-      "skills": [],
-      "path": "commands/cost-report.md"
-    },
-    {
-      "command": "ecc-guide",
-      "description": "Navigate ECC's current agents, skills, commands, hooks, install profiles, and docs from the live repository surface.",
-      "type": "review",
-      "primaryAgents": [],
-      "allAgents": [],
-      "skills": [
-        "security-scan"
-      ],
-      "path": "commands/ecc-guide.md"
     },
     {
       "command": "evolve",
@@ -70,103 +23,6 @@
       "path": "commands/evolve.md"
     },
     {
-      "command": "gan-build",
-      "description": "Run a generator/evaluator build loop for implementation tasks with bounded iterations and scoring.",
-      "type": "orchestration",
-      "primaryAgents": [],
-      "allAgents": [],
-      "skills": [],
-      "path": "commands/gan-build.md"
-    },
-    {
-      "command": "gan-design",
-      "description": "Run a generator/evaluator design loop for frontend or visual work with bounded iterations and scoring.",
-      "type": "planning",
-      "primaryAgents": [],
-      "allAgents": [],
-      "skills": [],
-      "path": "commands/gan-design.md"
-    },
-    {
-      "command": "harness-audit",
-      "description": "Run a deterministic repository harness audit and return a prioritized scorecard.",
-      "type": "testing",
-      "primaryAgents": [],
-      "allAgents": [],
-      "skills": [],
-      "path": "commands/harness-audit.md"
-    },
-    {
-      "command": "model-route",
-      "description": "Recommend the best model tier for the current task based on complexity, risk, and budget.",
-      "type": "review",
-      "primaryAgents": [],
-      "allAgents": [],
-      "skills": [],
-      "path": "commands/model-route.md"
-    },
-    {
-      "command": "orch-add-feature",
-      "description": "Orchestrate building a brand-new feature end to end — research, plan, TDD, review, gated commit. Wrapper that kicks off the orch-add-feature skill.",
-      "type": "orchestration",
-      "primaryAgents": [],
-      "allAgents": [],
-      "skills": [
-        "orch-add-feature"
-      ],
-      "path": "commands/orch-add-feature.md"
-    },
-    {
-      "command": "orch-build-mvp",
-      "description": "Orchestrate bootstrapping a working MVP from a design/spec doc — ingest, slice, scaffold, TDD, review, gated commit (reuses the GAN harness). Wrapper for the orch-build-mvp skill.",
-      "type": "orchestration",
-      "primaryAgents": [],
-      "allAgents": [],
-      "skills": [
-        "orch-build-mvp"
-      ],
-      "path": "commands/orch-build-mvp.md"
-    },
-    {
-      "command": "orch-change-feature",
-      "description": "Orchestrate altering an existing, working feature to new desired behavior — update tests to the new spec, change impl, review, gated commit. Wrapper for the orch-change-feature skill.",
-      "type": "orchestration",
-      "primaryAgents": [],
-      "allAgents": [],
-      "skills": [
-        "orch-add-feature",
-        "orch-change-feature",
-        "orch-fix-defect"
-      ],
-      "path": "commands/orch-change-feature.md"
-    },
-    {
-      "command": "orch-fix-defect",
-      "description": "Orchestrate fixing a bug — reproduce it as a failing regression test, fix to green, review, gated commit. Wrapper for the orch-fix-defect skill.",
-      "type": "orchestration",
-      "primaryAgents": [],
-      "allAgents": [],
-      "skills": [
-        "orch-add-feature",
-        "orch-change-feature",
-        "orch-fix-defect"
-      ],
-      "path": "commands/orch-fix-defect.md"
-    },
-    {
-      "command": "orch-refine-code",
-      "description": "Orchestrate a behavior-preserving refactor — confirm tests green, restructure without changing behavior, keep green, review, gated commit. Wrapper for the orch-refine-code skill.",
-      "type": "orchestration",
-      "primaryAgents": [],
-      "allAgents": [],
-      "skills": [
-        "orch-change-feature",
-        "orch-fix-defect",
-        "orch-refine-code"
-      ],
-      "path": "commands/orch-refine-code.md"
-    },
-    {
       "command": "orch-review",
       "description": "Run the orch-review native Workflow over a diff (local changes or a GitHub PR) and report blocking vs advisory findings. Surface for the orch-review workflow.",
       "type": "review",
@@ -176,154 +32,6 @@
       "path": "commands/orch-review.md"
     },
     {
-      "command": "plan-canvas",
-      "description": "Open a plan or HTML artifact in the browser Plan Canvas for annotate-and-approve review",
-      "type": "review",
-      "primaryAgents": [],
-      "allAgents": [],
-      "skills": [
-        "plan-canvas"
-      ],
-      "path": "commands/plan-canvas.md"
-    },
-    {
-      "command": "plan-prd",
-      "description": "Generate a lean, problem-first PRD and hand off to /plan for implementation planning.",
-      "type": "testing",
-      "primaryAgents": [],
-      "allAgents": [],
-      "skills": [],
-      "path": "commands/plan-prd.md"
-    },
-    {
-      "command": "plan",
-      "description": "Restate requirements, assess risks, and create step-by-step implementation plan. WAIT for user CONFIRM before touching any code.",
-      "type": "testing",
-      "primaryAgents": [
-        "planner"
-      ],
-      "allAgents": [
-        "planner"
-      ],
-      "skills": [
-        "plan-canvas"
-      ],
-      "path": "commands/plan.md"
-    },
-    {
-      "command": "pr",
-      "description": "Create a GitHub PR from current branch with unpushed commits — discovers templates, analyzes changes, pushes",
-      "type": "testing",
-      "primaryAgents": [],
-      "allAgents": [],
-      "skills": [],
-      "path": "commands/pr.md"
-    },
-    {
-      "command": "project-init",
-      "description": "Detect a project's stack and produce a dry-run ECC onboarding plan using the repository's install manifests and stack mappings.",
-      "type": "testing",
-      "primaryAgents": [],
-      "allAgents": [],
-      "skills": [],
-      "path": "commands/project-init.md"
-    },
-    {
-      "command": "projects",
-      "description": "List known projects and their instinct statistics",
-      "type": "general",
-      "primaryAgents": [],
-      "allAgents": [],
-      "skills": [
-        "continuous-learning-v2"
-      ],
-      "path": "commands/projects.md"
-    },
-    {
-      "command": "prp-plan",
-      "description": "Create comprehensive feature implementation plan with codebase analysis and pattern extraction",
-      "type": "testing",
-      "primaryAgents": [],
-      "allAgents": [],
-      "skills": [],
-      "path": "commands/prp-plan.md"
-    },
-    {
-      "command": "prp-pr",
-      "description": "Create a GitHub PR from current branch with unpushed commits — discovers templates, analyzes changes, pushes",
-      "type": "testing",
-      "primaryAgents": [],
-      "allAgents": [],
-      "skills": [],
-      "path": "commands/prp-pr.md"
-    },
-    {
-      "command": "quality-gate",
-      "description": "Run the ECC formatter quality gate for a single file and report remediation steps.",
-      "type": "testing",
-      "primaryAgents": [],
-      "allAgents": [],
-      "skills": [],
-      "path": "commands/quality-gate.md"
-    },
-    {
-      "command": "react-build",
-      "description": "Fix React build failures (Vite, webpack, Next.js, CRA, Parcel, esbuild, Bun) incrementally — JSX/TSX compile errors, hydration mismatches, server/client component boundary failures, missing types. Invokes the react-build-resolver agent for minimal, surgical fixes.",
-      "type": "testing",
-      "primaryAgents": [
-        "react-build-resolver"
-      ],
-      "allAgents": [
-        "react-build-resolver"
-      ],
-      "skills": [
-        "react-patterns"
-      ],
-      "path": "commands/react-build.md"
-    },
-    {
-      "command": "react-review",
-      "description": "Comprehensive React/JSX code review for hook correctness, render performance, server/client component boundaries, accessibility, and React-specific security. Invokes the react-reviewer agent (and typescript-reviewer alongside on TSX/JSX changes).",
-      "type": "testing",
-      "primaryAgents": [
-        "react-reviewer",
-        "typescript-reviewer"
-      ],
-      "allAgents": [
-        "react-reviewer",
-        "typescript-reviewer"
-      ],
-      "skills": [
-        "accessibility",
-        "react-patterns",
-        "react-testing"
-      ],
-      "path": "commands/react-review.md"
-    },
-    {
-      "command": "react-test",
-      "description": "Enforce TDD workflow for React. Write React Testing Library tests first (behavior-focused, accessibility-first), then implement components. Detects Vitest or Jest and verifies coverage targets.",
-      "type": "testing",
-      "primaryAgents": [],
-      "allAgents": [],
-      "skills": [
-        "accessibility",
-        "e2e-testing",
-        "react-testing",
-        "tdd-workflow"
-      ],
-      "path": "commands/react-test.md"
-    },
-    {
-      "command": "refactor-clean",
-      "description": "Safely identify and remove dead code with verification after each change.",
-      "type": "testing",
-      "primaryAgents": [],
-      "allAgents": [],
-      "skills": [],
-      "path": "commands/refactor-clean.md"
-    },
-    {
       "command": "resume-session",
       "description": "Load the most recent session file from ~/.claude/session-data/ and resume work with full context from where the last session ended.",
       "type": "testing",
@@ -331,15 +39,6 @@
       "allAgents": [],
       "skills": [],
       "path": "commands/resume-session.md"
-    },
-    {
-      "command": "review-pr",
-      "description": "Comprehensive PR review using specialized agents",
-      "type": "testing",
-      "primaryAgents": [],
-      "allAgents": [],
-      "skills": [],
-      "path": "commands/review-pr.md"
     },
     {
       "command": "santa-loop",
@@ -360,15 +59,6 @@
       "path": "commands/save-session.md"
     },
     {
-      "command": "sessions",
-      "description": "Manage Claude Code session history, aliases, and session metadata.",
-      "type": "general",
-      "primaryAgents": [],
-      "allAgents": [],
-      "skills": [],
-      "path": "commands/sessions.md"
-    },
-    {
       "command": "setup-pm",
       "description": "Configure your preferred package manager (npm/pnpm/yarn/bun)",
       "type": "build",
@@ -376,120 +66,18 @@
       "allAgents": [],
       "skills": [],
       "path": "commands/setup-pm.md"
-    },
-    {
-      "command": "skill-create",
-      "description": "Analyze local git history to extract coding patterns and generate SKILL.md files. Local version of the Skill Creator GitHub App.",
-      "type": "testing",
-      "primaryAgents": [],
-      "allAgents": [],
-      "skills": [],
-      "path": "commands/skill-create.md"
-    },
-    {
-      "command": "skill-health",
-      "description": "Show skill portfolio health dashboard with charts and analytics",
-      "type": "review",
-      "primaryAgents": [],
-      "allAgents": [],
-      "skills": [],
-      "path": "commands/skill-health.md"
-    },
-    {
-      "command": "test-coverage",
-      "description": "Analyze coverage, identify gaps, and generate missing tests toward the target threshold.",
-      "type": "testing",
-      "primaryAgents": [],
-      "allAgents": [],
-      "skills": [],
-      "path": "commands/test-coverage.md"
-    },
-    {
-      "command": "update-codemaps",
-      "description": "Scan project structure and generate token-lean architecture codemaps.",
-      "type": "planning",
-      "primaryAgents": [],
-      "allAgents": [],
-      "skills": [],
-      "path": "commands/update-codemaps.md"
-    },
-    {
-      "command": "update-docs",
-      "description": "Sync documentation from source-of-truth files such as scripts, schemas, routes, and exports.",
-      "type": "testing",
-      "primaryAgents": [],
-      "allAgents": [],
-      "skills": [],
-      "path": "commands/update-docs.md"
     }
   ],
   "statistics": {
     "byType": {
       "build": 1,
-      "general": 2,
-      "orchestration": 6,
-      "planning": 2,
-      "refactoring": 1,
-      "review": 5,
-      "testing": 24
+      "review": 1,
+      "testing": 5
     },
-    "topAgents": [
-      {
-        "agent": "planner",
-        "count": 1
-      },
-      {
-        "agent": "react-build-resolver",
-        "count": 1
-      },
-      {
-        "agent": "react-reviewer",
-        "count": 1
-      },
-      {
-        "agent": "typescript-reviewer",
-        "count": 1
-      }
-    ],
+    "topAgents": [],
     "topSkills": [
       {
-        "skill": "orch-add-feature",
-        "count": 3
-      },
-      {
-        "skill": "orch-change-feature",
-        "count": 3
-      },
-      {
-        "skill": "orch-fix-defect",
-        "count": 3
-      },
-      {
-        "skill": "accessibility",
-        "count": 2
-      },
-      {
         "skill": "continuous-learning-v2",
-        "count": 2
-      },
-      {
-        "skill": "plan-canvas",
-        "count": 2
-      },
-      {
-        "skill": "react-patterns",
-        "count": 2
-      },
-      {
-        "skill": "react-testing",
-        "count": 2
-      },
-      {
-        "skill": "e2e-testing",
-        "count": 1
-      },
-      {
-        "skill": "orch-build-mvp",
         "count": 1
       }
     ]

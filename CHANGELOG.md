@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## 2.2.8 - 2026-10-10
+
+### Removed
+
+- Pruned skills, commands and agents unused in Neopadel (planning/orch-*, gan-*, generic pr/review/build/security commands, framework pattern skills, 16 unused agents) to cut `/context` cost. Kept: orch-review, santa-loop, santa-method, session and evolve commands, react-performance, seo, motion-foundations, continuous-learning-v2 and the reviewer/planner agents. Install-manifest paths, catalog counts and the command registry were updated to match.
+
+### Changed
+
+- Scoped the descriptions of `react-performance`, `seo` and `motion-foundations` to the apps that use them.
+
 ## 2.2.7 - 2026-10-10
 
 ### Changed
