@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.2.19 - 2026-10-11
+
+### Fixed
+
+- `tdd-guide` agent: the "don't mock what you own" rule is scoped to integration tests (unit tests may isolate a function), and local services such as Redis or an MQTT broker run for real instead of being listed as unmockable externals.
+
 ## 2.2.18 - 2026-10-11
 
 ### Changed

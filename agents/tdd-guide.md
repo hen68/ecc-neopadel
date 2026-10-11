@@ -75,8 +75,8 @@ npm run test:coverage
 - Testing implementation details (internal state) instead of behavior
 - Tests depending on each other (shared state)
 - Asserting too little (passing tests that don't verify anything)
-- Mocking what you own: integration tests run against the real database (e.g. a disposable instance or replica set), not a mock of it
-- Mocking more than true externals you can't run locally: payment providers, message brokers and hardware, third-party HTTP, the clock
+- Mocking what you own in integration tests: run them against the real database and local services (e.g. a disposable database instance, a local Redis or MQTT broker), not mocks of them; unit tests may isolate a function from its collaborators
+- Mocking more than true externals you can't or shouldn't hit from tests: payment providers, third-party HTTP APIs, real hardware, the clock
 - Asserting on mocks instead of behavior: a test that only checks a mock was called proves nothing about the code
 
 ## Quality Checklist
