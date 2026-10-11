@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 2.2.11 - 2026-10-11
+
+### Removed
+
+- `memory` and `sequential-thinking` MCP servers from `.mcp.json`.
+
 ## 2.2.10 - 2026-10-10
 
 ### Removed
