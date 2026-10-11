@@ -1,6 +1,6 @@
 ---
 name: react-performance
-description: Performance rules for Next.js App Router apps (admin, store-app, store-kiosk, web-app): waterfalls, bundle size, RSC/server, re-render. Not for mobile-app (React Native).
+description: "Performance rules for Next.js App Router apps (admin, store-app, store-kiosk, web-app): waterfalls, bundle size, RSC/server, re-render. Not for mobile-app (React Native)."
 metadata:
   origin: ECC
 ---

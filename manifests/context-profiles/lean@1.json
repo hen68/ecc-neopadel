@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "lean@1",
+  "description": "Proposed three-skill ECC discovery kernel. Remaining skills are routed; this profile does not activate or modify a harness.",
+  "registryId": "skill-registry@1",
+  "selection": {
+    "eager": ["skill:blueprint", "skill:santa-method", "skill:verification-loop"],
+    "required": ["skill:blueprint", "skill:santa-method", "skill:verification-loop"],
+    "remainder": "routed"
+  },
+  "budget": { "tokens": 8000, "mode": "blocking" }
+}
