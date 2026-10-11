@@ -77,6 +77,8 @@ const cases = [
   ['allows a readable test-fixture token', () => assertAllowed('auth.test.js', "  token: 'valid-reset-token',")],
   ['blocks a private key block', () => assertBlocked('key.pem', `${'-----BEGIN ' + 'RSA PRIVATE KEY-----'}`)],
   ['blocks a Mongo password that merely starts with "pass"', () => assertBlocked('.env', `MONGO_URI=${'mongodb' + '://'}admin:Passw0rd2024xyz@db/x`)],
+  ['blocks a credentialed non-Mongo URI under a secret-named key', () => assertBlocked('.env', `DB_PASSWORD="${'postgres' + '://'}admin:hunter2abc123@db.internal/app"`)],
+  ['blocks a base64 secret that starts with a slash', () => assertBlocked('.env', `${'AWS_SECRET' + '_ACCESS_KEY'}="/fK3xw9aQpLm2ZrT8vYbN4cHdJ6eG1sU0iOkWq7R"`)],
   ['allows an OAuth token endpoint constant', () => assertAllowed('oauth.js', "const TOKEN_URL = 'https://oauth2.googleapis.com/token';")],
   ['allows a password-reset route', () => assertAllowed('routes.js', '  resetPasswordUrl: "/auth/reset-password/v2/confirm",')],
   ['allows a Mongo URI with an @ after the path', () => assertAllowed('.env', 'MONGO_URI=mongodb://localhost:27017/app?x=@y')],

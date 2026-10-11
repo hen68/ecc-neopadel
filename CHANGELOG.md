@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.2.22 - 2026-10-11
+
+### Fixed
+
+- Secret scan and `redact-secrets`: the 2.2.21 URL/path skip let real secrets through. Secret-named values that are credentialed URIs (`DB_PASSWORD="postgres://user:pw@host"`) or base64 starting with `/` (AWS secret keys) are flagged again; only credential-free URLs and `./`/`../` paths are skipped.
+
 ## 2.2.21 - 2026-10-11
 
 ### Fixed

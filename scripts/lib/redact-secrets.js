@@ -22,9 +22,10 @@ const RULES = [
   // stays intact); keep scheme, user and host.
   [/\b([a-z][a-z0-9+.-]*:\/\/[^\s:/@]*:)[^\s@/]+@/gi, (_m, prefix) => `${prefix}${REDACTED}@`],
   // Secret-named key assigned a random-looking value (letter + digit, 16+ chars).
-  // URL/path keys (TOKEN_URL, tokenizer) and URL/path values are left alone.
+  // URL/path keys (TOKEN_URL, tokenizer), URLs (their credentials are handled by the URI rule
+  // above) and ./ ../ paths are left alone; a bare leading "/" is not, base64 can start with it.
   [
-    /((?:api[_-]?key|secret|password|passwd|token)(?!s\b|izer|_?url|_?path|_?endpoint)\w*['"]?\s*[:=]\s*['"]?)(?![a-z][a-z0-9+.-]*:\/\/|\.{0,2}\/)(?=[^'"\s]*[0-9])(?=[^'"\s]*[A-Za-z])[^'"\s]{16,}/gi,
+    /((?:api[_-]?key|secret|password|passwd|token)(?!s\b|izer|_?url|_?path|_?endpoint)\w*['"]?\s*[:=]\s*['"]?)(?![a-z][a-z0-9+.-]*:\/\/|\.{1,2}\/)(?=[^'"\s]*[0-9])(?=[^'"\s]*[A-Za-z])[^'"\s]{16,}/gi,
     (_m, prefix) => `${prefix}${REDACTED}`,
   ],
 ];

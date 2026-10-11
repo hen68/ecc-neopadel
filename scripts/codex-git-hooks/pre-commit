@@ -70,8 +70,9 @@ while IFS= read -r file; do
   # Key names may carry a prefix/suffix (STRIPE_SECRET_KEY, clientSecret), so no
   # word boundaries around the keyword. The value must look random (16+ chars with
   # a letter and a digit, no whitespace) so test fixtures and UI copy stay quiet;
-  # URL/path keys (TOKEN_URL, resetPasswordUrl, tokenizer) and URL/path values are skipped.
-  scan_added_lines "$file" "generic credential assignment" "(?i)(api[_-]?key|secret|password|token)(?!s\\b|izer|_?url|_?path|_?endpoint)\\w*['\\\"]?\\s*[:=]\\s*['\\\"](?![a-z][a-z0-9+.-]*://|\\.{0,2}/)(?=[^'\\\"\\s]*[0-9])(?=[^'\\\"\\s]*[A-Za-z])[^'\\\"\\s]{16,}['\\\"]"
+  # URL/path keys (TOKEN_URL, resetPasswordUrl, tokenizer), credential-free URLs and ./ ../
+  # paths are skipped (a leading "/" alone is not: base64 secrets can start with it).
+  scan_added_lines "$file" "generic credential assignment" "(?i)(api[_-]?key|secret|password|token)(?!s\\b|izer|_?url|_?path|_?endpoint)\\w*['\\\"]?\\s*[:=]\\s*['\\\"](?![a-z][a-z0-9+.-]*://(?![^\\s/@'\\\"]*:[^\\s/@'\\\"]+@)|\\.{1,2}/)(?=[^'\\\"\\s]*[0-9])(?=[^'\\\"\\s]*[A-Za-z])[^'\\\"\\s]{16,}['\\\"]"
 done <<< "$staged_files"
 
 if [[ "$has_findings" -eq 1 ]]; then

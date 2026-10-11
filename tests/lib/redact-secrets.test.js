@@ -11,6 +11,7 @@ const assert = require('assert');
 const { redactSecrets, REDACTED } = require('../../scripts/lib/redact-secrets');
 
 const LONG = 'A1b2C3d4E5f6G7h8J9k0L1m2';
+const SLASH_B64 = `/fK3xw9aQpLm2Zr${'T8vYbN4cHdJ6eG1sU0iOkWq7R'}`;
 
 function test(name, fn) {
   try {
@@ -66,6 +67,7 @@ const cases = [
     const text = 'TOKEN_URL=https://oauth2.googleapis.com/token tokenizer: bert-base-uncased-v2 must stay';
     assert.strictEqual(redactSecrets(text), text);
   }],
+  ['redacts a base64 secret that starts with a slash', () => assertRedacted(`AWS_SECRET_ACCESS_KEY=${SLASH_B64}`, SLASH_B64)],
   ['leaves ordinary prose untouched', () => {
     const text = 'Fix the payout cron and add a regression test for token refresh';
     assert.strictEqual(redactSecrets(text), text);
