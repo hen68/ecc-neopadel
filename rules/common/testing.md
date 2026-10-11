@@ -17,6 +17,17 @@ MANDATORY workflow:
 5. Refactor (IMPROVE)
 6. Verify coverage (80%+)
 
+## Test Quality Gates
+
+A green test only counts if it can go red:
+
+- **Name the break first.** Before writing the test body, name the production change that would make it fail. If you can't, the test checks nothing.
+- **Watch it fail.** Run a new test before the fix and confirm it fails for the intended reason (not "No tests found", an import error or a timeout).
+- **No mirror assertions.** Never compute the expected value with the code under test; use a literal or an independent calculation.
+- **Mocks earn no assertions.** Asserting only that a mock was called proves nothing about behavior; assert on the result or the persisted state.
+- **No change detectors.** Don't assert on source text or incidental internals that break on harmless refactors.
+- **Your test green is not the suite green.** Run the full affected suite before claiming success, and name any failure you leave behind.
+
 ## Troubleshooting Test Failures
 
 1. Use **tdd-guide** agent

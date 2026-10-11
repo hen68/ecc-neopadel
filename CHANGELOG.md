@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.2.23 - 2026-10-11
+
+### Added
+
+- `rules/common/testing.md`: Test Quality Gates — name the production change that would break a test before writing it, watch it fail, no mirror assertions, mocks earn no assertions, no change detectors, and the full affected suite must be green before claiming success.
+
 ## 2.2.22 - 2026-10-11
 
 ### Fixed
