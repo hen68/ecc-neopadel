@@ -196,7 +196,7 @@ Copy-Item -Recurse rules/typescript "$HOME/.claude/rules/"
 /plugin list ecc@ecc
 ```
 
-**完成！** 你现在可以使用 14 个代理、8 个技能和 3 个命令。
+**完成！** 你现在可以使用 18 个代理、8 个技能和 3 个命令。
 
 ### multi-* 命令需要额外配置
 

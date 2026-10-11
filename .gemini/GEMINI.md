@@ -4,7 +4,7 @@ This file provides Gemini CLI with the baseline ECC workflow, review standards, 
 
 ## Overview
 
-ECC is a cross-harness coding system with 14 specialized agents, 8 skills, and 3 commands.
+ECC is a cross-harness coding system with 18 specialized agents, 8 skills, and 3 commands.
 
 Gemini support is currently focused on a strong project-local instruction layer via `.gemini/GEMINI.md`, plus the shared MCP catalog and package-manager setup assets shipped by the installer.
 

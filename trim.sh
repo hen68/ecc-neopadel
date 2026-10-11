@@ -48,7 +48,8 @@ KEEP_SKILLS=(
 # --- AGENTS (*.md under agents/) ----------------------------------------------
 KEEP_AGENTS=(
   # v2.2.10 prune (Neopadel /context audit): only what the monorepo uses; do not re-add without a reason
-  code-explorer code-reviewer code-simplifier database-reviewer e2e-runner harness-optimizer performance-optimizer pr-test-analyzer react-reviewer security-reviewer seo-specialist silent-failure-hunter tdd-guide typescript-reviewer
+  # v2.2.14: restored planner architect build-error-resolver refactor-cleaner (own, versioned copies instead of relying on native behaviour)
+  architect build-error-resolver code-explorer code-reviewer code-simplifier database-reviewer e2e-runner harness-optimizer performance-optimizer planner pr-test-analyzer refactor-cleaner react-reviewer security-reviewer seo-specialist silent-failure-hunter tdd-guide typescript-reviewer
 )
 
 # --- COMMANDS (*.md under commands/) ------------------------------------------

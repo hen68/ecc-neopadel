@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.2.14 - 2026-10-11
+
+### Added
+
+- Restored agents `planner`, `architect`, `build-error-resolver`, `refactor-cleaner` (from upstream v2.2.3) so our rules reference versioned copies rather than native behaviour; added to the `trim.sh` keep-list.
+
 ## 2.2.13 - 2026-10-11
 
 ### Removed
