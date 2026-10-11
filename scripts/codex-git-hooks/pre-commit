@@ -30,15 +30,22 @@ scan_added_lines() {
   local regex="$3"
   local added_lines
   local hits
+  local status=0
 
   added_lines="$(git diff --cached -U0 -- "$file" | awk '/^\+\+\+ /{next} /^\+/{print substr($0,2)}')"
   if [[ -z "$added_lines" ]]; then
     return 0
   fi
 
-  if hits="$(printf '%s\n' "$added_lines" | rg -n --pcre2 "$regex" 2>/dev/null)"; then
+  # -e: patterns may start with "-". Exit 1 = clean; any other non-zero exit (bad
+  # regex, rg missing) fails closed instead of silently passing the commit.
+  hits="$(printf '%s\n' "$added_lines" | rg -n --pcre2 -e "$regex")" || status=$?
+  if [[ "$status" -eq 0 ]]; then
     printf '\n[ECC pre-commit] Potential secret detected (%s) in %s\n' "$name" "$file" >&2
     printf '%s\n' "$hits" | head -n 3 >&2
+    has_findings=1
+  elif [[ "$status" -ne 1 ]]; then
+    printf '\n[ECC pre-commit] Secret scan failed (%s, rg exit %s) in %s; blocking.\n' "$name" "$status" "$file" >&2
     has_findings=1
   fi
 }
@@ -56,14 +63,15 @@ while IFS= read -r file; do
   scan_added_lines "$file" "GitHub classic token" 'ghp_[A-Za-z0-9]{36}'
   scan_added_lines "$file" "GitHub fine-grained token" 'github_pat_[A-Za-z0-9_]{20,}'
   scan_added_lines "$file" "AWS access key" 'AKIA[0-9A-Z]{16}'
-  scan_added_lines "$file" "private key block" '-----BEGIN (RSA|EC|OPENSSH|DSA|PRIVATE) KEY-----'
+  scan_added_lines "$file" "private key block" '-----BEGIN ([A-Z]+ )?PRIVATE KEY-----'
   scan_added_lines "$file" "Stripe secret/restricted key" '\b[sr]k_(live|test)_[A-Za-z0-9]{16,}'
   scan_added_lines "$file" "Stripe webhook secret" '\bwhsec_[A-Za-z0-9]{16,}'
-  scan_added_lines "$file" "Mongo URI with credentials" 'mongodb(\+srv)?://[^\s:/@]+:(?!(?i:pass\w*|pwd|<[^>]*>|\$\{?\w+\}?|\*+)@)[^\s@]+@'
+  scan_added_lines "$file" "Mongo URI with credentials" 'mongodb(\+srv)?://[^\s:/@]+:(?!(?i:pass(?:word)?|pwd|secret|changeme|x{3,}|<[^>]*>|\$\{?\w+\}?|\*+)@)[^\s@/]+@'
   # Key names may carry a prefix/suffix (STRIPE_SECRET_KEY, clientSecret), so no
   # word boundaries around the keyword. The value must look random (16+ chars with
-  # a letter and a digit, no whitespace) so test fixtures and UI copy stay quiet.
-  scan_added_lines "$file" "generic credential assignment" "(?i)(api[_-]?key|secret|password|token)\\w*['\\\"]?\\s*[:=]\\s*['\\\"](?=[^'\\\"\\s]*[0-9])(?=[^'\\\"\\s]*[A-Za-z])[^'\\\"\\s]{16,}['\\\"]"
+  # a letter and a digit, no whitespace) so test fixtures and UI copy stay quiet;
+  # URL/path keys (TOKEN_URL, resetPasswordUrl, tokenizer) and URL/path values are skipped.
+  scan_added_lines "$file" "generic credential assignment" "(?i)(api[_-]?key|secret|password|token)(?!s\\b|izer|_?url|_?path|_?endpoint)\\w*['\\\"]?\\s*[:=]\\s*['\\\"](?![a-z][a-z0-9+.-]*://|\\.{0,2}/)(?=[^'\\\"\\s]*[0-9])(?=[^'\\\"\\s]*[A-Za-z])[^'\\\"\\s]{16,}['\\\"]"
 done <<< "$staged_files"
 
 if [[ "$has_findings" -eq 1 ]]; then

@@ -17,11 +17,14 @@ const RULES = [
   [/\bgithub_pat_[A-Za-z0-9_]{20,}/g, () => REDACTED],
   [/\bAKIA[0-9A-Z]{16}\b/g, () => REDACTED],
   [/\bxox[abprs]-[A-Za-z0-9-]{10,}/g, () => REDACTED],
-  // user:password@ in any URI scheme; keep scheme, user and host.
-  [/\b([a-z][a-z0-9+.-]*:\/\/[^\s:/@]+:)[^\s@]+@/gi, (_m, prefix) => `${prefix}${REDACTED}@`],
+  [/\b(Bearer\s+)[A-Za-z0-9._~+/-]{20,}=*/gi, (_m, prefix) => `${prefix}${REDACTED}`],
+  // [user]:password@ in any URI scheme (userinfo never contains "/", so host:port/@path
+  // stays intact); keep scheme, user and host.
+  [/\b([a-z][a-z0-9+.-]*:\/\/[^\s:/@]*:)[^\s@/]+@/gi, (_m, prefix) => `${prefix}${REDACTED}@`],
   // Secret-named key assigned a random-looking value (letter + digit, 16+ chars).
+  // URL/path keys (TOKEN_URL, tokenizer) and URL/path values are left alone.
   [
-    /((?:api[_-]?key|secret|password|passwd|token)\w*['"]?\s*[:=]\s*['"]?)(?=[^'"\s]*[0-9])(?=[^'"\s]*[A-Za-z])[^'"\s]{16,}/gi,
+    /((?:api[_-]?key|secret|password|passwd|token)(?!s\b|izer|_?url|_?path|_?endpoint)\w*['"]?\s*[:=]\s*['"]?)(?![a-z][a-z0-9+.-]*:\/\/|\.{0,2}\/)(?=[^'"\s]*[0-9])(?=[^'"\s]*[A-Za-z])[^'"\s]{16,}/gi,
     (_m, prefix) => `${prefix}${REDACTED}`,
   ],
 ];

@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.2.21 - 2026-10-11
+
+### Fixed
+
+- Codex pre-commit secret scan failed open: the private-key pattern started with `-` (rg read it as a flag) and never matched `BEGIN RSA PRIVATE KEY`, and any rg error exited silently as "clean". Patterns now go through `rg -e`, and a non-0/1 rg exit blocks the commit.
+- Secret scan and `redact-secrets`: URI passwords can no longer swallow `host:port/...@path` (Vite `/@vite`, npm `/@scope` URLs); Mongo placeholders are matched exactly (`Passw0rd2024` is no longer skipped); URL/path-named keys and URL/path values (`TOKEN_URL`, `resetPasswordUrl`, `tokenizer`) are not flagged.
+- `redact-secrets`: also redacts empty-user Redis URIs (`redis://:pw@host`) and `Bearer` tokens.
+
 ## 2.2.20 - 2026-10-11
 
 ### Fixed

@@ -56,6 +56,16 @@ const cases = [
   }],
   ['redacts a random-looking value assigned to a secret-named key', () => assertRedacted(`JWT_SECRET="${'9f3a'.repeat(8)}"`, '9f3a'.repeat(8))],
   ['redacts a private key block', () => assertRedacted(`${'-----BEGIN ' + 'PRIVATE KEY-----'}\nMIIEv${LONG}\n-----END PRIVATE KEY-----`, `MIIEv${LONG}`)],
+  ['redacts an empty-user Redis password', () => assertRedacted('REDIS_URL=redis://:S3cretPw0rdXyz@redis:6379', 'S3cretPw0rdXyz')],
+  ['redacts a Bearer token', () => assertRedacted(`Authorization: Bearer ${'abcdef0123456789'.repeat(2)}`, 'abcdef0123456789'.repeat(2))],
+  ['keeps a port and path when an @ follows the path', () => {
+    const text = 'open http://localhost:5173/@vite/client and https://registry.npmjs.org:443/@babel/core';
+    assert.strictEqual(redactSecrets(text), text);
+  }],
+  ['keeps URL and tokenizer values that only look secret-named', () => {
+    const text = 'TOKEN_URL=https://oauth2.googleapis.com/token tokenizer: bert-base-uncased-v2 must stay';
+    assert.strictEqual(redactSecrets(text), text);
+  }],
   ['leaves ordinary prose untouched', () => {
     const text = 'Fix the payout cron and add a regression test for token refresh';
     assert.strictEqual(redactSecrets(text), text);
