@@ -4,6 +4,7 @@
 
 ### Added
 
+- Rules (`rules/`): agent roster trimmed to shipped agents, docs updates point at the `docs-update` skill, dead skill/command pointers removed, Exa tier replaced by built-in web search, `planner` step uses `gh-pr-implement` + `ecc:planner`. `~/.claude/rules/ecc` is synced from here.
 - Restored agents `planner`, `architect`, `build-error-resolver`, `refactor-cleaner` (from upstream v2.2.3) so our rules reference versioned copies rather than native behaviour; added to the `trim.sh` keep-list.
 
 ## 2.2.13 - 2026-10-11

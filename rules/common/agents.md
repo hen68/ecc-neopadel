@@ -19,11 +19,10 @@ Agent(subagent_type: "ecc:planner", prompt: "...")
 | ecc:build-error-resolver | Fix build errors | When build fails |
 | ecc:e2e-runner | E2E testing | Critical user flows |
 | ecc:refactor-cleaner | Dead code cleanup | Code maintenance |
-| ecc:doc-updater | Documentation | Updating docs |
-| ecc:rust-reviewer | Rust code review | Rust projects |
-| ecc:harmonyos-app-resolver | HarmonyOS app development | HarmonyOS/ArkTS projects |
 
-For the full roster of 68 agents, see `/ecc:ecc-guide`.
+Other shipped agents (reviewers, explorer, simplifier, optimizers) are listed by `claude plugin details ecc`.
+
+Documentation updates have no agent: use the project-scope `docs-update` skill (the Neopadel monorepo ships its own), or a general docs-update skill in project scope.
 
 ## Immediate Agent Usage
 
