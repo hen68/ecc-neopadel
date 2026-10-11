@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.2.18 - 2026-10-11
+
+### Changed
+
+- `tdd-guide` agent: outside-in TDD for cross-layer features (failing integration/E2E test first, unit Red-Green inside, outer test green last); mock only true externals and keep the database real in integration tests (was "mock external dependencies such as Redis"); 80% coverage is a floor, not the goal; removed the dead `skill: tdd-workflow` pointer (pruned from this fork).
+
 ## 2.2.17 - 2026-10-11
 
 ### Fixed
