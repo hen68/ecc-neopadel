@@ -32,6 +32,10 @@ const requiredPatterns = [
   /Magic number/i,
   /Would a senior engineer on this\s+team actually change this in review/i,
   /Do not withhold approval to appear rigorous/i,
+  // Review scope must be a committed range, not just the working tree.
+  /git merge-base HEAD origin\/main/,
+  /BASE\.\.HEAD/,
+  /misses already-committed work/i,
 ];
 
 let passed = 0;

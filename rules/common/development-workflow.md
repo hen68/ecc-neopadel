@@ -29,8 +29,8 @@ The Feature Implementation Workflow describes the development pipeline: research
 
 3. **Code Review**
    - Use **code-reviewer** agent immediately after writing code
-   - Address CRITICAL and HIGH issues
-   - Fix MEDIUM issues when possible
+   - Verify each finding against the code before acting on it: fix every finding that is a real issue, whatever its severity
+   - Reject false positives and wrong remedies with a one-line, evidence-based reason; never apply a fix you have not verified
 
 4. **Commit & Push**
    - Detailed commit messages

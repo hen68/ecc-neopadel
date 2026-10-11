@@ -57,6 +57,8 @@ Before marking code complete:
 | MEDIUM | Maintainability concern, including an unexplained source file over the soft 800-line ceiling | **INFO** - Consider fixing |
 | LOW | Style or minor suggestion | **NOTE** - Optional |
 
+Severity sets merge priority, not whether a finding is true. Before fixing anything, verify the finding and its suggested remedy against the code: fix the real ones, and reject false positives and wrong remedies with evidence.
+
 ## Agent Usage
 
 Use these agents for code review:

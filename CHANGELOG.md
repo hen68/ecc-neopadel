@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.2.16 - 2026-10-11
+
+### Fixed
+
+- `code-reviewer` agent: reviews a pinned `merge-base..HEAD` range (or the BASE/HEAD the caller passes) plus uncommitted changes, instead of only `git diff` / `git diff --staged`, which missed already-committed work on multi-commit branches. Guarded by `tests/ci/code-reviewer-false-positive-guard.test.js`.
+- `rules/common/development-workflow.md`, `rules/common/code-review.md`: verify each finding and its suggested remedy against the code, fix every real issue whatever its severity, reject false positives and wrong remedies with evidence (was "address CRITICAL and HIGH issues").
+
 ## 2.2.15 - 2026-10-11
 
 ### Fixed
