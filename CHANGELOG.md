@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.2.15 - 2026-10-11
+
+### Fixed
+
+- `santa-method` Neopadel reviewer reference: `opencode run -f` truncates attachments at ~50 KB (an 82 KB payload reached DeepSeek cut off), so the payload now goes to DeepSeek on stdin; every payload ends with a random `END OF PAYLOAD` token that each reviewer must echo as `end_marker` (mismatch = failed slot, never NICE); BSD-safe `mktemp`; fresh `origin/main` fetch before the merge-base; a docs-integrity rubric row plus a note that payload-only reviewers cannot treat absent link targets as broken; a ready validator snippet.
+
 ## 2.2.14 - 2026-10-11
 
 ### Added
