@@ -41,20 +41,20 @@ APPLY=0
 # Base curation (carried from v1) + adopted v2.0.0 additions across four groups:
 #   agent-harness/eval, ECC self-mgmt/orchestration, frontend/design/a11y, JS backend/DB.
 KEEP_SKILLS=(
-  # v2.2.8 prune (Neopadel /context audit): only what the monorepo uses; do not re-add without a reason
-  continuous-learning-v2 e2e-testing motion-foundations react-performance santa-method seo tdd-workflow
+  # v2.2.10 prune (Neopadel /context audit): only what the monorepo uses; do not re-add without a reason
+  blueprint continuous-learning-v2 deployment-patterns eval-harness motion-foundations react-performance santa-method verification-loop
 )
 
 # --- AGENTS (*.md under agents/) ----------------------------------------------
 KEEP_AGENTS=(
-  # v2.2.8 prune (Neopadel /context audit): only what the monorepo uses; do not re-add without a reason
-  code-explorer code-reviewer code-simplifier database-reviewer e2e-runner performance-optimizer pr-test-analyzer react-reviewer security-reviewer seo-specialist silent-failure-hunter typescript-reviewer
+  # v2.2.10 prune (Neopadel /context audit): only what the monorepo uses; do not re-add without a reason
+  code-explorer code-reviewer code-simplifier database-reviewer e2e-runner harness-optimizer performance-optimizer pr-test-analyzer react-reviewer security-reviewer seo-specialist silent-failure-hunter tdd-guide typescript-reviewer
 )
 
 # --- COMMANDS (*.md under commands/) ------------------------------------------
 KEEP_COMMANDS=(
-  # v2.2.8 prune (Neopadel /context audit): only what the monorepo uses; do not re-add without a reason
-  auto-update evolve orch-review resume-session santa-loop save-session setup-pm
+  # v2.2.10 prune (Neopadel /context audit): only what the monorepo uses; do not re-add without a reason
+  evolve resume-session save-session
 )
 
 # --- RULES (directories under rules/) -----------------------------------------

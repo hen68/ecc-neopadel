@@ -1,16 +1,7 @@
 {
   "schemaVersion": 1,
-  "totalCommands": 7,
+  "totalCommands": 3,
   "commands": [
-    {
-      "command": "auto-update",
-      "description": "Pull the latest ECC repo changes and reinstall the current managed targets.",
-      "type": "testing",
-      "primaryAgents": [],
-      "allAgents": [],
-      "skills": [],
-      "path": "commands/auto-update.md"
-    },
     {
       "command": "evolve",
       "description": "Analyze instincts and suggest or generate evolved structures",
@@ -23,15 +14,6 @@
       "path": "commands/evolve.md"
     },
     {
-      "command": "orch-review",
-      "description": "Run the orch-review native Workflow over a diff (local changes or a GitHub PR) and report blocking vs advisory findings. Surface for the orch-review workflow.",
-      "type": "review",
-      "primaryAgents": [],
-      "allAgents": [],
-      "skills": [],
-      "path": "commands/orch-review.md"
-    },
-    {
       "command": "resume-session",
       "description": "Load the most recent session file from ~/.claude/session-data/ and resume work with full context from where the last session ended.",
       "type": "testing",
@@ -41,15 +23,6 @@
       "path": "commands/resume-session.md"
     },
     {
-      "command": "santa-loop",
-      "description": "Adversarial dual-review convergence loop — Codex and DeepSeek (via opencode) must both return NICE before code ships.",
-      "type": "testing",
-      "primaryAgents": [],
-      "allAgents": [],
-      "skills": [],
-      "path": "commands/santa-loop.md"
-    },
-    {
       "command": "save-session",
       "description": "Save current session state to a dated file in ~/.claude/session-data/ so work can be resumed in a future session with full context.",
       "type": "testing",
@@ -57,22 +30,11 @@
       "allAgents": [],
       "skills": [],
       "path": "commands/save-session.md"
-    },
-    {
-      "command": "setup-pm",
-      "description": "Configure your preferred package manager (npm/pnpm/yarn/bun)",
-      "type": "build",
-      "primaryAgents": [],
-      "allAgents": [],
-      "skills": [],
-      "path": "commands/setup-pm.md"
     }
   ],
   "statistics": {
     "byType": {
-      "build": 1,
-      "review": 1,
-      "testing": 5
+      "testing": 3
     },
     "topAgents": [],
     "topSkills": [

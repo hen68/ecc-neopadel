@@ -9,21 +9,18 @@ model:
   fallback:
     - claude-sonnet-4-6
 skills:
+  - blueprint
   - continuous-learning-v2
-  - e2e-testing
+  - deployment-patterns
+  - eval-harness
   - motion-foundations
   - react-performance
   - santa-method
-  - seo
-  - tdd-workflow
+  - verification-loop
 commands:
-  - auto-update
   - evolve
-  - orch-review
   - resume-session
-  - santa-loop
   - save-session
-  - setup-pm
 tags:
   - agent-harness
   - developer-tools

@@ -1,21 +1,15 @@
----
-description: Adversarial dual-review convergence loop — Codex and DeepSeek (via opencode) must both return NICE before code ships.
----
-
-# Santa Loop
+# Santa Method — Neopadel external reviewers (Codex + DeepSeek via opencode)
 
 Two independent external reviewers — **Reviewer A: Codex**, **Reviewer B: DeepSeek via opencode** — different model families, no shared context, must both return NICE. Claude Opus is the fallback for a slot whose external reviewer is unavailable, blocked by the secret guard, or returns an unparsable verdict. It is never counted as "approval by silence".
 
-Scope is the whole branch (committed + uncommitted), an outbound secret guard runs before anything leaves the machine, and an unparsable reviewer verdict fails closed. Neopadel-specific rubric rows only apply when the diff can exhibit them.
+Scope is the whole branch (committed + uncommitted), an outbound secret guard runs before anything leaves the machine, and an unparsable reviewer verdict fails closed. Neopadel rubric rows only apply when the diff can exhibit them.
 
-## Usage
+## Options
 
-```
-/santa-loop [file-or-glob | description] [--no-deepseek] [--opus]
-```
+Pass these in plain words when asking for the review:
 
-- `--no-deepseek` — keep DeepSeek out of the loop (Opus takes slot B). Use for anything you do not want a third party to see.
-- `--opus` — add Claude Opus as a third reviewer on top of A and B.
+- **no DeepSeek** — keep DeepSeek out of the loop (Opus takes slot B). Use for anything you do not want a third party to see.
+- **add Opus** — add Claude Opus as a third reviewer on top of A and B.
 
 ## Step 1: Scope
 
@@ -78,7 +72,7 @@ fi
 
 Scratch dir for anything that has no sandbox: `SCRATCH=$(mktemp -d)`.
 
-**Reviewer A — Codex** (flags verified; no `-m`: a ChatGPT-auth Codex rejects explicit models)
+**Reviewer A — Codex** (flags verified; no `-m`: a ChatGPT-auth Codex rejects explicit models; must run inside a git repo, outside one add `--skip-git-repo-check`)
 
 ```bash
 codex exec --sandbox read-only --ephemeral -C "$(pwd)" - < "$PROMPT_FILE" > "$SCRATCH/a.out" 2> "$SCRATCH/a.err"
@@ -88,7 +82,7 @@ codex exec --sandbox read-only --ephemeral -C "$(pwd)" - < "$PROMPT_FILE" > "$SC
 
 ```bash
 opencode run "Do not use any tools. Everything needed is in the attached file. Reply with the JSON verdict only." \
-  --pure --dir "$SCRATCH" -m deepseek/deepseek-v4-pro --format json -f "$PROMPT_FILE" > "$SCRATCH/b.jsonl" 2> "$SCRATCH/b.err"
+  --pure --dir "$SCRATCH" -m deepseek/deepseek-v4-pro --format json -f "$PROMPT_FILE" < /dev/null > "$SCRATCH/b.jsonl" 2> "$SCRATCH/b.err"
 jq -r 'select(.type=="text") | .part.text' "$SCRATCH/b.jsonl" > "$SCRATCH/b.out"
 ```
 
@@ -98,6 +92,7 @@ opencode gotchas (all confirmed live):
 |---|---|---|
 | `-f` is an array option | A positional after `-f` is swallowed as a second file: `File not found: <your prompt>` | Put the message **first**, options after |
 | `-f` resolves relative to `--dir` | `File not found: p.txt` when `--dir` is the scratch dir | Pass an **absolute** path to `-f` |
+| **Hangs forever, zero output** | `opencode run` waits on stdin when it is not a terminal (tool shells, background jobs) | Always add `< /dev/null` (verified 2026-10-11: 12 min hang without it, 18 s with it) |
 | No sandbox / read-only flag | A stray tool call could touch files | Empty `--dir "$SCRATCH"` + no-tools instruction; never pass `--auto` |
 | Bad model / auth | exit 1, empty stdout | Treat empty `b.out` as failure (below) |
 | JSON events | `step_start`, `text`, `step_finish` | Only `.type=="text"` carries the reply; trivial call costs ~30k input tokens (~$0.02) |
@@ -133,7 +128,7 @@ With `--opus`, also launch the Opus agent as a third, independent reviewer; all 
 ## Step 6: Fix cycle (NAUGHTY)
 
 1. Show all critical issues; fix only what was flagged (no drive-by refactors). Fix concerns opportunistically if cheap — never re-loop for them alone.
-2. Commit fixes in one commit: `fix: address santa-loop findings (round N)`. Commit with `-c commit.gpgsign=false` in secondary worktrees.
+2. Commit fixes in one commit: `fix: address santa findings (round N)`. Commit with `-c commit.gpgsign=false` in secondary worktrees.
 3. Re-run Step 4 with **fresh** reviewers (no memory of earlier rounds).
 4. **Max 3 rounds.** Then stop and print the unresolved `DISAGREE_EVIDENCE` and open concerns for manual review. Do not push.
 
@@ -158,4 +153,5 @@ Result: [NICE — AWAITING PUSH CONFIRMATION / ESCALATED TO USER]
 - Different training data is the point; the Opus fallback gives context isolation but not model diversity — the report must say when it was used.
 - Codex gets repo read access inside its read-only sandbox; DeepSeek gets only the payload (no sandbox exists for opencode).
 - The rubric is the most important input. Tighten it if reviewers rubber-stamp or flag style.
+- Re-verified 2026-10-11 from this skill: buggy refund fixture -> Codex and DeepSeek both NAUGHTY with concrete race sentences; guarded fixture -> DeepSeek NICE, Codex a real stuck-REFUNDING edge case; fake `sk_live_` payload blocked by the guard.
 - Fixture smoke test 2026-10-10 (synthetic refund function, no repo code): both reviewers returned NAUGHTY on a read-then-write status guard with a concrete race sentence; DeepSeek returned NICE on the guarded version, Codex found a real lost-finalization edge case on it.

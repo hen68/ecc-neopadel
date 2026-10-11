@@ -1,6 +1,6 @@
 ---
 name: santa-method
-description: "Multi-agent adversarial verification with convergence loop. Two independent review agents must both pass before output ships. Use when output must clear two independent adversarial reviewers before it ships."
+description: "Multi-agent adversarial verification with convergence loop. Two independent review agents must both pass before output ships. Use when output must clear two independent adversarial reviewers before it ships. For Neopadel code (money-path, hardware, auth) use the external Codex + DeepSeek reviewers in references/neopadel-external-reviewers.md."
 metadata:
   origin: "Ronald Skelton - Founder, RapportScore.ai"
 ---
@@ -10,6 +10,10 @@ metadata:
 Multi-agent adversarial verification framework. Make a list, check it twice. If it's naughty, fix it until it's nice.
 
 The core insight: a single agent reviewing its own output shares the same biases, knowledge gaps, and systematic errors that produced the output. Two independent reviewers with no shared context break this failure mode.
+
+## Neopadel profile
+
+For code in this monorepo, reviewers are Codex and DeepSeek (via `opencode`), not two Claude subagents. Follow [references/neopadel-external-reviewers.md](references/neopadel-external-reviewers.md): branch scope, rubric rows, secret guard, typed verdicts, fail-closed validation, max 3 rounds, no push without confirmation.
 
 ## When to Activate
 

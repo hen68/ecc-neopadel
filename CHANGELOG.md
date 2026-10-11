@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+## 2.2.10 - 2026-10-10
+
+### Removed
+
+- Skills `e2e-testing`, `seo`, `tdd-workflow`, `security-review` (the `security-reviewer` agent covers it); commands `santa-loop`, `orch-review`, `auto-update`, `setup-pm`. `continuous-learning-v2` stays on disk (the observe hooks and `resolve-ecc-root` need it) but is `disable-model-invocation` so it no longer costs listing context.
+
+### Changed
+
+- `santa-loop` is replaced by `skills/santa-method/references/neopadel-external-reviewers.md` (Codex + DeepSeek via opencode, secret guard, typed verdicts, fail-closed). `opencode run` needs `< /dev/null` or it hangs without a TTY.
+
+### Added
+
+- Restored `tdd-guide`, `blueprint`, `deployment-patterns`, `verification-loop`; added upstream `harness-optimizer` and its `eval-harness` dependency.
+
 ## 2.2.9 - 2026-10-10
 
 ### Changed
