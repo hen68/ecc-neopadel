@@ -55,7 +55,6 @@
 | `/orch-change-feature` | Alter an existing feature to new desired behavior — update tests to the new spec, change impl, review, gated commit |
 | `/orch-fix-defect` | Fix a bug — reproduce it as a failing regression test, fix to green, review, gated commit |
 | `/orch-refine-code` | Behavior-preserving refactor — confirm tests green, restructure, keep green, review, gated commit |
-| `/orch-review` | Run the orch-review native Workflow over a diff (local changes or a GitHub PR) and report blocking vs advisory findings |
 
 ---
 

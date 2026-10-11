@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.2.13 - 2026-10-11
+
+### Removed
+
+- `workflows/` (the `orch-review` native workflow); native `/code-review` is the local-diff fallback.
+
 ## 2.2.12 - 2026-10-11
 
 ### Changed
