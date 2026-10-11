@@ -490,12 +490,11 @@ Run `npm test` locally. It is the same gauntlet CI runs, and it catches almost e
 Releases are cut on a regular cadence, roughly every two weeks, plus out-of-band
 patches for security or data-loss fixes.
 
-1. Sync the version everywhere: `VERSION`, `package.json`, and (via
-   `node scripts/build-pi-core.js`) `pi/core/package.json`.
+1. Sync the version everywhere: `VERSION` and `package.json`.
 2. Update `CHANGELOG.md` and write reviewed release notes at
    `docs/releases/<version>/release-notes.md` (required by the release workflow).
 3. Tag `vX.Y.Z` on `main` and push the tag. The `release.yml` workflow verifies
-   the tag is exactly on `origin/main`, checks the VERSION/pi/core sync, tests
+   the tag is exactly on `origin/main`, checks the VERSION sync, tests
    the exact packed artifact on Linux, macOS, and Windows, publishes to npm with
    provenance, verifies registry bytes, and creates the GitHub Release from the
    reviewed notes.

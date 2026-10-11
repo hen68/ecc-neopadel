@@ -95,11 +95,6 @@ jobs:
             exit 1
           fi
 
-      # pi/core/package.json derives its version from VERSION, so a current
-      # profile also proves pi/core is in sync with the tag.
-      - name: Verify pi/core profile is current
-        run: node scripts/build-pi-core.js --check
-
       - name: Verify release metadata stays in sync
         run: node tests/plugin-manifest.test.js
 
