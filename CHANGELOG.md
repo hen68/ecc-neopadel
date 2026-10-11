@@ -5,6 +5,7 @@
 ### Removed
 
 - `workflows/` (the `orch-review` native workflow); native `/code-review` is the local-diff fallback.
+- `exa` MCP server from `.mcp.json` (no kept agent or skill uses it; built-in WebSearch/WebFetch cover it).
 
 ## 2.2.12 - 2026-10-11
 
