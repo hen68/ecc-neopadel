@@ -1,5 +1,6 @@
 ---
 description: Save current session state to a dated file in ~/.claude/session-data/ so work can be resumed in a future session with full context.
+disable-model-invocation: true
 ---
 
 # Save Session Command
@@ -50,6 +51,12 @@ The legacy filename `YYYY-MM-DD-session.tmp` is still valid, but new session fil
 ### Step 4: Populate the file with all sections below
 
 Write every section honestly. Do not skip sections — write "Nothing yet" or "N/A" if a section genuinely has no content. An incomplete file is worse than an honest empty section.
+
+Three rules apply to every section:
+
+- **Redact.** Never write a secret, token, credential, connection string with a password, or personal data into the file; write `[REDACTED]` in its place. The file is re-injected into later sessions.
+- **Reference, don't copy.** Specs, plans, ADRs, issues, PRs, commits and diffs already exist: point to them by path or URL instead of restating them. Restated state goes stale; the source doesn't.
+- **Suggest skills.** Under "Exact Next Step", name the skills or commands the next session should reach for first.
 
 ### Step 5: Show the file to the user
 

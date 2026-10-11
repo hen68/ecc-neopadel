@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.2.20 - 2026-10-11
+
+### Fixed
+
+- Codex pre-commit secret scan: detects Stripe secret/restricted keys, Stripe webhook secrets and Mongo URIs with embedded credentials; the generic credential rule now matches prefixed/camelCase key names (`STRIPE_SECRET_KEY`, `clientSecret`) and only random-looking values, so test fixtures and UI copy stay quiet.
+- `session-end` hook: redacts secrets (API keys, tokens, JWTs, URI passwords, private keys) from persisted user-message prefixes and LLM summaries via the new `scripts/lib/redact-secrets.js`.
+
+### Changed
+
+- `save-session` / `resume-session`: user-invoked only (`disable-model-invocation: true`); `save-session` adds redact, reference-don't-copy and suggested-skills rules.
+
 ## 2.2.19 - 2026-10-11
 
 ### Fixed

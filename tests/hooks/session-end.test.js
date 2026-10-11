@@ -139,6 +139,32 @@ function runTests() {
     }
   }) ? passed++ : failed++);
 
+  (test('redacts secrets from persisted user messages', () => {
+    const home = fs.mkdtempSync(path.join(os.tmpdir(), 'ecc-session-end-'));
+    try {
+      const uuid = '22222222-2222-4333-8444-555555555555';
+      const transcript = path.join(home, `${uuid}.jsonl`);
+      const secret = `${'sk_' + 'live_'}A1b2C3d4E5f6G7h8J9k0L1m2`;
+      fs.writeFileSync(
+        transcript,
+        [
+          JSON.stringify({ type: 'user', content: `Use STRIPE_SECRET_KEY=${secret} for the payout test` }),
+          JSON.stringify({ type: 'user', content: 'Then add regression coverage' }),
+        ].join('\n') + '\n'
+      );
+
+      const res = runHook(home, transcript);
+      assert.strictEqual(res.status || 0, 0, `hook exited ${res.status}: ${res.stderr}`);
+
+      const out = fs.readFileSync(sessionFileFor(home, uuid), 'utf8');
+      assert.ok(!out.includes(secret), 'Secret must not be persisted');
+      assert.ok(out.includes('[REDACTED]'), 'Should leave a redaction marker');
+      assert.ok(out.includes('for the payout test'), 'Should keep the surrounding task text');
+    } finally {
+      fs.rmSync(home, { recursive: true, force: true });
+    }
+  }) ? passed++ : failed++);
+
   (test('writes a session for one user message with tool activity', () => {
     const home = fs.mkdtempSync(path.join(os.tmpdir(), 'ecc-session-end-'));
     try {

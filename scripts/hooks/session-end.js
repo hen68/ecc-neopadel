@@ -13,6 +13,7 @@ const path = require('path');
 const fs = require('fs');
 const { getSessionsDir, getDateString, getTimeString, getSessionIdShort, sanitizeSessionId, getProjectName, getRepoIdentity, ensureDir, readFile, writeFile, runCommand, stripAnsi, log } = require('../lib/utils');
 const { generateSessionSummary, getContextRemainingPct, getContextThreshold } = require('../lib/llm-summary');
+const { redactSecrets } = require('../lib/redact-secrets');
 
 const SUMMARY_START_MARKER = '<!-- ECC:SUMMARY:START -->';
 const SUMMARY_END_MARKER = '<!-- ECC:SUMMARY:END -->';
@@ -53,7 +54,8 @@ function extractSessionSummary(transcriptPath) {
         // human prompts. Exclude known structured noise above instead of
         // discarding every metadata-marked user turn.
         if (cleaned && !isToolResult && !isNoise) {
-          userMessages.push(cleaned.slice(0, 200));
+          // Redact before truncating so a secret straddling the cut can't leak a prefix.
+          userMessages.push(redactSecrets(cleaned).slice(0, 200));
         }
       }
 
@@ -257,7 +259,7 @@ async function main() {
     const isPeriodicTurn = summary.totalMessages > 0 && summary.totalMessages % safeInterval === 0;
     if (isContextLow || isPeriodicTurn) {
       log(`[SessionEnd] LLM summary triggered (context: ${contextPct ?? 'unknown'}%, messages: ${summary.totalMessages})`);
-      llmSummary = generateSessionSummary(transcriptPath);
+      llmSummary = redactSecrets(generateSessionSummary(transcriptPath));
       if (llmSummary) {
         log('[SessionEnd] LLM summary generated successfully');
       } else {
