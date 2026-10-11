@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.2.17 - 2026-10-11
+
+### Fixed
+
+- `code-reviewer` agent: computes the range against the PR's base branch (`gh pr view --json baseRefName`, default `main`) so hotfixes cut from `prod` don't pull in prod-only commits, and stops to ask for a range when `BASE` is empty or equals `HEAD` instead of approving an empty diff.
+
 ## 2.2.16 - 2026-10-11
 
 ### Fixed

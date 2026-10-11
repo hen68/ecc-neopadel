@@ -22,7 +22,8 @@ When invoked:
 
 1. **Gather context** — Review a pinned range, not just the working tree:
    - If the caller gave BASE and HEAD SHAs (or a diff file), review exactly `git diff BASE..HEAD` with `git log --oneline BASE..HEAD`. Do not substitute another range.
-   - Otherwise compute it: `BASE=$(git merge-base HEAD origin/main 2>/dev/null || git merge-base HEAD main)`, then review `git diff $BASE..HEAD` plus any uncommitted changes from `git diff HEAD`.
+   - Otherwise compute it against the PR's base branch (hotfixes may target `prod`, not `main`): `base=$(gh pr view --json baseRefName -q .baseRefName 2>/dev/null || echo main)`, then `BASE=$(git merge-base HEAD "origin/$base")`. Review `git diff $BASE..HEAD` plus any uncommitted changes from `git diff HEAD`.
+   - If `BASE` is empty (no such ref) or equals `HEAD` (you are on the base branch) and `git diff HEAD` is empty too, there is nothing pinned to review: say so and ask the caller for a BASE..HEAD range. Never approve an empty range.
    - Reviewing only `git diff` / `git diff --staged` misses already-committed work, so never use them alone once anything is committed. State the range you reviewed at the top of your report.
 2. **Understand scope** — Identify which files changed, what feature/fix they relate to, and how they connect.
 3. **Read surrounding code** — Don't review changes in isolation. Read the full file and understand imports, dependencies, and call sites.

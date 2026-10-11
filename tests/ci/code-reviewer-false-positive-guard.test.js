@@ -33,7 +33,9 @@ const requiredPatterns = [
   /Would a senior engineer on this\s+team actually change this in review/i,
   /Do not withhold approval to appear rigorous/i,
   // Review scope must be a committed range, not just the working tree.
-  /git merge-base HEAD origin\/main/,
+  /git merge-base HEAD "origin\/\$base"/,
+  /baseRefName/,
+  /Never approve an empty range/,
   /BASE\.\.HEAD/,
   /misses already-committed work/i,
 ];
