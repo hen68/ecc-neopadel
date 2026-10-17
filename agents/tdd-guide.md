@@ -86,7 +86,7 @@ npm run test:coverage
 End every run with:
 
 - `git diff --stat` for the files you changed
-- The number of `expect(`/`assert` lines you removed, per test file, against the base; justify each removal, or state "0 removed"
+- The number of `expect(`/`assert` lines you removed, per test file, against the commit you started from (or the BASE ref you were given), e.g. `git diff <start> -- <test file>`; justify each removal, or state "0 removed"
 - The red run (test name and failure reason) and the green run for each new test
 - If a tool, skill, rule or instruction misled you, or you lost real time to the environment: a `FEEDBACK-CANDIDATE:` block (Task / Expected / Actual / Wrong approach / Suggestion). Omit it for slips you corrected yourself
 

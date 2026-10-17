@@ -463,6 +463,14 @@ test('allowedTools includes Write permission', () => {
   assert.ok(match[1].includes('Write'), `allowedTools should include Write, got: ${match[1]}`);
 });
 
+test('allowedTools includes Edit permission', () => {
+  // Without Edit the observer's updates to existing instincts were denied and it withheld the completion record
+  const content = fs.readFileSync(observerLoopPath, 'utf8');
+  const match = content.match(/--allowedTools\s+"([^"]+)"/);
+  assert.ok(match, 'Should find --allowedTools with quoted value');
+  assert.ok(match[1].split(',').includes('Edit'), `allowedTools should include Edit, got: ${match[1]}`);
+});
+
 test('claude invocation still includes ECC_SKIP_OBSERVE and ECC_HOOK_PROFILE guards', () => {
   const content = fs.readFileSync(observerLoopPath, 'utf8');
   // Find the claude execution line(s)
