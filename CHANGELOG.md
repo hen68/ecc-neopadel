@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.2.25 - 2026-10-17
+
+### Changed
+
+- Every agent definition ends with a "Tooling feedback" section: report a `FEEDBACK-CANDIDATE:` block when a tool, skill, rule, hook or instruction misled the agent. It no longer depends on each dispatch prompt carrying the line (445 of 800 dispatches did in the week of 2026-10-11).
+
 ## 2.2.24 - 2026-10-17
 
 ### Fixed

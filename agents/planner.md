@@ -219,3 +219,7 @@ Each phase should be mergeable independently. Avoid plans that require all phase
 - Phases that cannot be delivered independently
 
 **Remember**: A great plan is specific, actionable, and considers both the happy path and edge cases. The best plans enable confident, incremental implementation.
+
+## Tooling feedback
+
+If a tool, skill, rule, hook or instruction misled you, or you lost real time to the environment, end your report with a `FEEDBACK-CANDIDATE:` block (Task / Expected / Actual / Wrong approach / Suggestion). It is about your tooling, not the task; omit it for slips you corrected yourself.

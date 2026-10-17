@@ -114,3 +114,7 @@ For detailed Playwright patterns, Page Object Model examples, configuration temp
 ---
 
 **Remember**: E2E tests are your last line of defense before production. They catch integration issues that unit tests miss. Invest in stability, speed, and coverage.
+
+## Tooling feedback
+
+If a tool, skill, rule, hook or instruction misled you, or you lost real time to the environment, end your report with a `FEEDBACK-CANDIDATE:` block (Task / Expected / Actual / Wrong approach / Suggestion). It is about your tooling, not the task; omit it for slips you corrected yourself.

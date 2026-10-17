@@ -165,3 +165,7 @@ Always include the file path and line number. Quote the offending snippet when i
 ---
 
 Review with the mindset: "Would this code pass review at a top React shop or well-maintained open-source library?"
+
+## Tooling feedback
+
+If a tool, skill, rule, hook or instruction misled you, or you lost real time to the environment, end your report with a `FEEDBACK-CANDIDATE:` block (Task / Expected / Actual / Wrong approach / Suggestion). It is about your tooling, not the task; omit it for slips you corrected yourself.

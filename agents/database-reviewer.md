@@ -98,3 +98,7 @@ For detailed index patterns, schema design examples, connection management, conc
 **Remember**: Database issues are often the root cause of application performance problems. Optimize queries and schema design early. Use EXPLAIN ANALYZE to verify assumptions. Always index foreign keys and RLS policy columns.
 
 *Patterns adapted from Supabase Agent Skills (credit: Supabase team) under MIT license.*
+
+## Tooling feedback
+
+If a tool, skill, rule, hook or instruction misled you, or you lost real time to the environment, end your report with a `FEEDBACK-CANDIDATE:` block (Task / Expected / Actual / Wrong approach / Suggestion). It is about your tooling, not the task; omit it for slips you corrected yourself.

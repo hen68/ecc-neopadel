@@ -218,3 +218,7 @@ Example architecture for an AI-powered SaaS platform:
 - **10M users**: Event-driven architecture, distributed caching, multi-region
 
 **Remember**: Good architecture enables rapid development, easy maintenance, and confident scaling. The best architecture is simple, clear, and follows established patterns.
+
+## Tooling feedback
+
+If a tool, skill, rule, hook or instruction misled you, or you lost real time to the environment, end your report with a `FEEDBACK-CANDIDATE:` block (Task / Expected / Actual / Wrong approach / Suggestion). It is about your tooling, not the task; omit it for slips you corrected yourself.
