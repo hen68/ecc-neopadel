@@ -266,7 +266,7 @@ analyze_observations() {
   fi
   ACTIVE_PROMPT_FILE="$prompt_file"
   cat > "$prompt_file" <<PROMPT
-IMPORTANT: You are running in non-interactive --print mode. You MUST use the Write tool directly to create files. Do NOT ask for permission, do NOT ask for confirmation, do NOT output summaries instead of writing. Just read, analyze, and write.
+IMPORTANT: You are running in non-interactive --print mode. You MUST use the Write tool directly to create files, and Write or Edit to update an existing one. Do NOT ask for permission, do NOT ask for confirmation, do NOT output summaries instead of writing. Just read, analyze, and write.
 
 Read ${analysis_relpath} and identify patterns for the project ${PROJECT_NAME} (user corrections, error resolutions, repeated workflows, tool preferences).
 If you find 3+ occurrences of the same pattern, you MUST write an instinct file directly to ${INSTINCTS_DIR}/<id>.md using the Write tool.
@@ -300,7 +300,7 @@ Rules:
 - Use narrow, specific triggers
 - Never include actual code snippets, only describe patterns
 - When a qualifying pattern exists, write or update the instinct file in this run instead of asking for confirmation
-- If a similar instinct already exists in ${INSTINCTS_DIR}/, update it instead of creating a duplicate
+- If a similar instinct already exists in ${INSTINCTS_DIR}/, update it (Edit for a small change such as one evidence line, Write for a rewrite) instead of creating a duplicate
 - The YAML frontmatter (between --- markers) with id field is MANDATORY
 - If a pattern seems universal (not project-specific), set scope to global instead of project
 - Examples of global patterns: always validate user input, prefer explicit error handling
@@ -408,7 +408,7 @@ PROMPT
   # cleanup terminate tool subprocesses as well as the direct CLI process.
   set -m
   ECC_SKIP_OBSERVE=1 ECC_HOOK_PROFILE=minimal claude --model "${ECC_OBSERVER_MODEL:-haiku}" --max-turns "$max_turns" --print \
-    --allowedTools "Read,Write" \
+    --allowedTools "Read,Write,Edit" \
     -p "$prompt_content" < /dev/null >&8 2>> "$LOG_FILE" &
   CLAUDE_PID=$!
   CLAUDE_PROCESS_GROUP=1

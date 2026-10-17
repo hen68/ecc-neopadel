@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.2.24 - 2026-10-17
+
+### Fixed
+
+- Continuous-learning observer: `--allowedTools` now includes `Edit`. The model edited existing instincts with `Edit`, got denied (3,228 denials in one week), and often withheld the completion record because "a required write is blocked", so many cycles logged as incomplete and retained their observations.
+
+### Changed
+
+- `tdd-guide`: test through the outer entry point (bulk/series: assert the target and a sibling); never delete or weaken assertions outside the change or edit tests with file-wide pattern deletes; a required Report section (`git diff --stat`, removed-assertion count per file, red/green runs, optional `FEEDBACK-CANDIDATE:` block).
+
 ## 2.2.23 - 2026-10-11
 
 ### Added

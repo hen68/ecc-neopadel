@@ -78,6 +78,17 @@ npm run test:coverage
 - Mocking what you own in integration tests: run them against the real database and local services (e.g. a disposable database instance, a local Redis or MQTT broker), not mocks of them; unit tests may isolate a function from its collaborators
 - Mocking more than true externals you can't or shouldn't hit from tests: payment providers, third-party HTTP APIs, real hardware, the clock
 - Asserting on mocks instead of behavior: a test that only checks a mock was called proves nothing about the code
+- Testing an inner or recursive helper when callers reach the behavior through an outer entry point: test through the entry point; for bulk or series operations, assert both the targeted item and an untouched sibling
+- Deleting or weakening an assertion outside the behavior you are changing, or editing test files with file-wide pattern deletes (`sed '/pattern/d'`); change assertions one at a time and only in the tests for this change
+
+## Report
+
+End every run with:
+
+- `git diff --stat` for the files you changed
+- The number of `expect(`/`assert` lines you removed, per test file, against the base; justify each removal, or state "0 removed"
+- The red run (test name and failure reason) and the green run for each new test
+- If a tool, skill, rule or instruction misled you, or you lost real time to the environment: a `FEEDBACK-CANDIDATE:` block (Task / Expected / Actual / Wrong approach / Suggestion). Omit it for slips you corrected yourself
 
 ## Quality Checklist
 
