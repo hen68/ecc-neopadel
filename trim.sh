@@ -2,9 +2,13 @@
 #
 # trim.sh — curate a LOCAL, OWNED ECC plugin clone down to a keep-list.
 #
-# Trims skills/, agents/, commands/, rules/ (deletes everything not listed below).
+# Trims skills/, agents/, commands/, rules/ (Claude Code surface) AND the
+# opencode surface (.opencode/commands/, .opencode/prompts/agents/) — deletes
+# everything not listed in the matching keep-list below.
 # Never touches scripts/, hooks/, contexts/, .claude-plugin/, node_modules/,
-# package.json, mcp-configs/, .mcp.json, etc. — the instinct loop depends on those.
+# package.json, mcp-configs/, .mcp.json, .opencode/plugins/, .opencode/tools/,
+# .opencode/instructions/, .opencode/opencode.json, etc. — the instinct loop and
+# opencode plugin runtime depend on those.
 #
 # Idempotent + keep-list driven: edit the arrays, re-run after `git pull`.
 #
@@ -65,16 +69,38 @@ KEEP_RULES=(
   common typescript react web react-native swift kotlin
 )
 
+# --- OPENCODE COMMANDS (*.md under .opencode/commands/) ------------------------
+# Same Neopadel stack audit: no Go/Rust/C++/Java/Kotlin/PHP/Python in the monorepo.
+# opencode's slash commands are its primary agent-invocation surface, so we keep
+# the whole JS/TS/React/RN/Next.js + harness/orchestration set and only drop the
+# six language-specific commands.
+KEEP_OPENCODE_COMMANDS=(
+  build-fix checkpoint code-review e2e eval evolve harness-audit instinct-export
+  instinct-import instinct-status learn loop-start loop-status model-route
+  orchestrate plan projects promote quality-gate refactor-clean security-scan
+  security setup-pm skill-create tdd test-coverage update-codemaps update-docs verify
+)
+
+# --- OPENCODE AGENTS (*.txt under .opencode/prompts/agents/) -------------------
+# Drop the language-specific reviewers/build-resolvers the monorepo can never use
+# (Go/Rust/C++/Java/Kotlin/PHP/Python). Keep the shared + JS/TS/React/RN set plus
+# doc-updater/docs-lookup (docs discipline) and loop-operator (orchestration).
+KEEP_OPENCODE_AGENTS=(
+  architect build-error-resolver code-reviewer database-reviewer doc-updater
+  docs-lookup e2e-runner harness-optimizer loop-operator planner refactor-cleaner
+  security-reviewer tdd-guide
+)
+
 # ==============================================================================
 # engine — do not edit below
 # ==============================================================================
 in_list() { local x="$1"; shift; local e; for e in "$@"; do [[ "$e" == "$x" ]] && return 0; done; return 1; }
 
-trim_dir() { # $1=subdir  $2=mode(dir|md)  rest=keep-list
+trim_dir() { # $1=subdir  $2=mode(dir|md|txt)  rest=keep-list
   local sub="$1" mode="$2"; shift 2
   local path="$ROOT/$sub"
   [[ -d "$path" ]] || { echo "  (skip: $sub/ not found)"; return; }
-  local kept=0 del=0 name target
+  local kept=0 del=0 name target ext
   echo "== $sub/ =="
   if [[ "$mode" == "dir" ]]; then
     for target in "$path"/*/; do
@@ -86,11 +112,12 @@ trim_dir() { # $1=subdir  $2=mode(dir|md)  rest=keep-list
       fi
     done
   else
-    for target in "$path"/*.md; do
+    ext="$mode"
+    for target in "$path"/*."$ext"; do
       [[ -f "$target" ]] || continue
-      name="$(basename "$target" .md)"
+      name="$(basename "$target" ".$ext")"
       if in_list "$name" "$@"; then kept=$((kept+1)); else
-        del=$((del+1)); echo "  DEL  $sub/$name.md"
+        del=$((del+1)); echo "  DEL  $sub/$name.$ext"
         [[ $APPLY -eq 1 ]] && rm -f "$target"
       fi
     done
@@ -105,5 +132,7 @@ trim_dir skills   dir "${KEEP_SKILLS[@]}"
 trim_dir agents   md  "${KEEP_AGENTS[@]}"
 trim_dir commands md  "${KEEP_COMMANDS[@]}"
 trim_dir rules    dir "${KEEP_RULES[@]}"
+trim_dir .opencode/commands        md  "${KEEP_OPENCODE_COMMANDS[@]}"
+trim_dir .opencode/prompts/agents  txt "${KEEP_OPENCODE_AGENTS[@]}"
 echo
-echo "Done. (scripts/ hooks/ contexts/ mcp-configs/ node_modules/ .claude-plugin/ left untouched)"
+echo "Done. (scripts/ hooks/ contexts/ mcp-configs/ node_modules/ .claude-plugin/ and .opencode/{plugins,tools,instructions,opencode.json} left untouched)"
