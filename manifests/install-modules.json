@@ -20,7 +20,8 @@
         "hermes",
         "openclaw",
         "kimi",
-        "adal"
+        "adal",
+        "opencode"
       ],
       "dependencies": [],
       "defaultInstall": true,

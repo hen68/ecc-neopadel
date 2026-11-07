@@ -5,6 +5,9 @@ const path = require('path');
 const {
   buildValidationIssue,
   createInstallTargetAdapter,
+  createRemappedOperation,
+  isForeignPlatformPath,
+  normalizeRelativePath,
 } = require('./helpers');
 const { resolveOpencodeConfigRoot } = require('../opencode-paths');
 
@@ -80,6 +83,31 @@ function defaultValidateOpencodeHome(input = {}) {
   return [];
 }
 
+// Mirror claude-home.js's `ecc` namespace for rules: the opencode install keeps
+// ECC-managed rules under `rules/ecc/` (instead of `rules/`) so they don't
+// collide with a project's own `rules/` content and stay recognisably ECC-owned.
+const OPENCODE_ECC_NAMESPACE = 'ecc';
+
+function getOpencodeManagedDestinationPath(adapter, sourceRelativePath, input) {
+  const normalizedSourcePath = normalizeRelativePath(sourceRelativePath);
+  const targetRoot = adapter.resolveRoot(input);
+
+  if (normalizedSourcePath === 'rules') {
+    return path.join(targetRoot, 'rules', OPENCODE_ECC_NAMESPACE);
+  }
+
+  if (normalizedSourcePath.startsWith('rules/')) {
+    return path.join(
+      targetRoot,
+      'rules',
+      OPENCODE_ECC_NAMESPACE,
+      normalizedSourcePath.slice('rules/'.length)
+    );
+  }
+
+  return null;
+}
+
 module.exports = createInstallTargetAdapter({
   id: 'opencode-home',
   target: 'opencode',
@@ -89,4 +117,39 @@ module.exports = createInstallTargetAdapter({
   installStatePathSegments: ['ecc-install-state.json'],
   nativeRootRelativePath: '.opencode',
   validate: defaultValidateOpencodeHome,
+  planOperations(input, adapter) {
+    const modules = Array.isArray(input.modules)
+      ? input.modules
+      : (input.module ? [input.module] : []);
+    const planningInput = {
+      repoRoot: input.repoRoot,
+      projectRoot: input.projectRoot,
+      homeDir: input.homeDir,
+    };
+
+    return modules.flatMap(module => {
+      const paths = Array.isArray(module.paths) ? module.paths : [];
+      return paths
+        .filter(p => !isForeignPlatformPath(p, adapter.target) && !adapter.excludesSourcePath(p))
+        .flatMap(sourceRelativePath => {
+          const managedDestinationPath = getOpencodeManagedDestinationPath(
+            adapter,
+            sourceRelativePath,
+            planningInput
+          );
+
+          if (managedDestinationPath) {
+            return [createRemappedOperation(
+              adapter,
+              module.id,
+              sourceRelativePath,
+              managedDestinationPath,
+              { strategy: 'preserve-relative-path' }
+            )];
+          }
+
+          return [adapter.createScaffoldOperation(module.id, sourceRelativePath, planningInput)];
+        });
+    });
+  },
 });
